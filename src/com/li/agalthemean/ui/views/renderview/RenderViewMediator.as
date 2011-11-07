@@ -31,12 +31,10 @@ package com.li.agalthemean.ui.views.renderview
 		}
 
 		private function onModelInitialized( model:Mesh ):void {
-			trace( "model: " + model );
 			requestModelRegistrationSignal.dispatch( model );
 		}
 
 		private function onMaterialInitialized( material:AGALMaterial ):void {
-			trace( "material: " + material );
 			requestMaterialRegisterSignal.dispatch( material );
 		}
 	}

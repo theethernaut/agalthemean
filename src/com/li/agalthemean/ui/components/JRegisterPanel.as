@@ -1,6 +1,7 @@
 package com.li.agalthemean.ui.components
 {
 
+	import com.li.agalthemean.ui.components.RegisterListModel;
 	import com.li.agalthemean.utils.RegisterPopUpManager;
 	import com.li.minimole.materials.agal.AGALMaterial;
 	import com.li.minimole.materials.agal.vo.registers.AGALRegister;
@@ -31,7 +32,7 @@ package com.li.agalthemean.ui.components
 			_listData = [];
 			_popUpClass = popUpClass;
 
-			_list = new JList( _listData );
+			_list = new JList( new RegisterListModel( _listData ) );
 			_list.addEventListener( ListItemEvent.ITEM_CLICK, listItemClickedHandler );
 
 			contentPanel.setLayout( new SoftBoxLayout( SoftBoxLayout.Y_AXIS ) );
@@ -107,7 +108,8 @@ package com.li.agalthemean.ui.components
 		}
 
 		protected function refreshList():void {
-			_list.setListData( _listData );
+			RegisterListModel( _list.getModel() ).updateData( _listData );
+			_list.updateListView();
 		}
 	}
 }
