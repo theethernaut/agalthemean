@@ -3,9 +3,9 @@ package com.li.agalthemean.ui.views.constantsview
 
 	import com.li.agalthemean.ui.components.JRegisterPanel;
 	import com.li.minimole.materials.agal.AGALMaterial;
-	import com.li.minimole.materials.agal.vo.registers.AGALRegister;
-	import com.li.minimole.materials.agal.vo.registers.RegisterConstant;
-	import com.li.minimole.materials.agal.vo.registers.VectorRegisterConstant;
+	import com.li.minimole.materials.agal.registers.AGALRegister;
+	import com.li.minimole.materials.agal.registers.RegisterConstant;
+	import com.li.minimole.materials.agal.registers.VectorRegisterConstant;
 
 	public class FragmentConstantsPanel extends JRegisterPanel
 	{

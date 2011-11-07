@@ -2,7 +2,7 @@ package com.li.agalthemean.utils
 {
 
 	import com.li.agalthemean.ui.components.JRegisterPopUp;
-	import com.li.minimole.materials.agal.vo.registers.AGALRegister;
+	import com.li.minimole.materials.agal.registers.AGALRegister;
 
 	import flash.display.Stage;
 	import flash.utils.Dictionary;

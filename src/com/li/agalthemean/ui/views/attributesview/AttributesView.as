@@ -3,8 +3,8 @@ package com.li.agalthemean.ui.views.attributesview
 
 	import com.li.agalthemean.ui.components.JRegisterPanel;
 	import com.li.minimole.materials.agal.AGALMaterial;
-	import com.li.minimole.materials.agal.vo.registers.AGALRegister;
-	import com.li.minimole.materials.agal.vo.registers.VertexAttribute;
+	import com.li.minimole.materials.agal.registers.AGALRegister;
+	import com.li.minimole.materials.agal.registers.VertexAttribute;
 
 	public class AttributesView extends JRegisterPanel
 	{

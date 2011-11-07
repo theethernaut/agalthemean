@@ -1,7 +1,7 @@
 package com.li.agalthemean.ui.components
 {
 
-	import com.li.minimole.materials.agal.vo.registers.AGALRegister;
+	import com.li.minimole.materials.agal.registers.AGALRegister;
 
 	import flash.events.Event;
 
@@ -24,6 +24,8 @@ package com.li.agalthemean.ui.components
 		public var registerRenamedSignal:Signal;
 		public var deleteBtnClickedSignal:Signal;
 
+		public var topHolder:JPanel;
+
 		public function JRegisterPopUp( register:AGALRegister, content:Component ) {
 
 			// TODO: ensure closed pop ups are garbage collected...
@@ -41,7 +43,7 @@ package com.li.agalthemean.ui.components
 			var deleteBtn:JButton = new JButton( "delete" );
 			deleteBtn.addEventListener( AWEvent.ACT, deleteBtnClickedHandler );
 
-			var topHolder:JPanel = new JPanel( new BorderLayout() );
+			topHolder = new JPanel( new BorderLayout() );
 			topHolder.append( nameField, BorderLayout.CENTER );
 			topHolder.append( deleteBtn, BorderLayout.EAST );
 

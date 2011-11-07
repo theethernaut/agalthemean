@@ -5,6 +5,7 @@ package com.li.agalthemean.ui.views.renderview
 	import com.li.minimole.materials.agal.AGALAdvancedPhongBitmapMaterial;
 	import com.li.minimole.materials.agal.AGALBitmapMaterial;
 	import com.li.minimole.materials.agal.AGALColorMaterial;
+	import com.li.minimole.materials.agal.AGALEnviroSphericalMaterial;
 	import com.li.minimole.materials.agal.AGALMaterial;
 	import com.li.minimole.materials.agal.AGALPhongBitmapMaterial;
 	import com.li.minimole.materials.agal.AGALPhongColorMaterial;
@@ -21,26 +22,45 @@ package com.li.agalthemean.ui.views.renderview
 
 	public class DefaultAssetStore
 	{
-		// Texture.
+		// texture
 		[Embed(source="../../../../../../../assets/head/Map-COL.jpg")]
-//		[Embed(source="../../../../../../../assets/head/explode.png")]
 		private var HeadTexture:Class;
 
-		// Texture.
+		// normal map
 		[Embed(source="../../../../../../../assets/head/Infinite-Level_02_World_SmoothUV.jpg")]
 		private var HeadNormals:Class;
 
-		// Texture.
+		// specular map
 		[Embed(source="../../../../../../../assets/head/Map-spec.jpg")]
 		private var HeadSpecular:Class;
 
-		// Model.
+		// cube map
+		[Embed(source="../../../../../../../assets/cubemap_brightday1/brightday1_negative_x.png")]
+		private var CubeNegX:Class;
+		/*[Embed(source="../../../../../../../assets/cubemap_brightday1/brightday1_negative_y.png")]
+		private var CubeNegY:Class;
+		[Embed(source="../../../../../../../assets/cubemap_brightday1/brightday1_negative_z.png")]
+		private var CubeNegZ:Class;
+		[Embed(source="../../../../../../../assets/cubemap_brightday1/brightday1_positive_x.png")]
+		private var CubePosX:Class;
+		[Embed(source="../../../../../../../assets/cubemap_brightday1/brightday1_positive_y.png")]
+		private var CubePosY:Class;
+		[Embed(source="../../../../../../../assets/cubemap_brightday1/brightday1_positive_z.png")]
+		private var CubePosZ:Class;*/
+
+		// model
 		[Embed (source="../../../../../../../assets/head/head.obj", mimeType="application/octet-stream")]
 		private var HeadModel:Class;
 
 		public var headTexture:BitmapData;
 		public var headNormals:BitmapData;
 		public var headSpecular:BitmapData;
+		public var cubeNegX:BitmapData;
+		public var cubeNegY:BitmapData;
+		public var cubeNegZ:BitmapData;
+		public var cubePosX:BitmapData;
+		public var cubePosY:BitmapData;
+		public var cubePosZ:BitmapData;
 
 		private var _material:AGALMaterial;
 		private var _model:Mesh;
@@ -55,6 +75,12 @@ package com.li.agalthemean.ui.views.renderview
 			headTexture = new HeadTexture().bitmapData;
 			headNormals = new HeadNormals().bitmapData;
 			headSpecular = new HeadSpecular().bitmapData;
+			cubeNegX = new CubeNegX().bitmapData;
+//			cubeNegY = new CubeNegY().bitmapData;
+//			cubeNegZ = new CubeNegZ().bitmapData;
+//			cubePosX = new CubePosX().bitmapData;
+//			cubePosY = new CubePosY().bitmapData;
+//			cubePosZ = new CubePosZ().bitmapData;
 
 			materialRequestedSignal = new Signal( AGALMaterial );
 			modelRequestedSignal = new Signal( Mesh );
@@ -62,18 +88,19 @@ package com.li.agalthemean.ui.views.renderview
 			_model = new CubeR( null );
 
 			// -----------------------
-			//
+			// -----------------------
 			// -----------------------
 			setTimeout( function():void {
 
-//				getAdvancedPhongBitmapMaterial();
-				getPhongColorMaterial();
+				getAdvancedPhongBitmapMaterial();
+//				getPhongColorMaterial();
+//				getEnviroSphericalMaterial();
 
 				getHeadModel();
 
 			}, 200 );
 			// -----------------------
-			//
+			// -----------------------
 			// -----------------------
 		}
 
@@ -125,6 +152,13 @@ package com.li.agalthemean.ui.views.renderview
 		// ---------------------------------------------------------------------
 		// Shaders
 		// ---------------------------------------------------------------------
+
+		public function getEnviroSphericalMaterial():AGALMaterial {
+			_material = new AGALEnviroSphericalMaterial( cubeNegX );
+			_model.material = _material;
+			materialRequestedSignal.dispatch( _material );
+			return _material;
+		}
 
 		public function getSimplestMaterial():AGALMaterial {
 			_material = new AGALColorMaterial();

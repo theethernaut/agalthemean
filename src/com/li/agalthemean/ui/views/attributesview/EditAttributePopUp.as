@@ -2,7 +2,7 @@ package com.li.agalthemean.ui.views.attributesview
 {
 
 	import com.li.agalthemean.ui.components.JRegisterPopUp;
-	import com.li.minimole.materials.agal.vo.registers.VertexAttribute;
+	import com.li.minimole.materials.agal.registers.VertexAttribute;
 
 	import org.aswing.JComboBox;
 

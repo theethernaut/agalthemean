@@ -4,7 +4,7 @@ package com.li.agalthemean.ui.components
 	import com.li.agalthemean.ui.components.RegisterListModel;
 	import com.li.agalthemean.utils.RegisterPopUpManager;
 	import com.li.minimole.materials.agal.AGALMaterial;
-	import com.li.minimole.materials.agal.vo.registers.AGALRegister;
+	import com.li.minimole.materials.agal.registers.AGALRegister;
 
 	import flash.events.Event;
 

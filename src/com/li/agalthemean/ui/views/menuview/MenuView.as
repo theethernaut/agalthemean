@@ -47,6 +47,7 @@ package com.li.agalthemean.ui.views.menuview
 			var file1_4:JMenuItem = new JMenuItem( "Color Phong Shader" );
 			var file1_5:JMenuItem = new JMenuItem( "Bitmap Phong Shader" );
 			var file1_6:JMenuItem = new JMenuItem( "Advanced Bitmap Phong Shader" );
+			var file1_7:JMenuItem = new JMenuItem( "Enviro Spherical Shader" );
 
 			file1_1.addEventListener( AWEvent.ACT, function( event:AWEvent ):void {
 				DefaultAssetStore.instance.getEmptyMaterial();
@@ -72,12 +73,17 @@ package com.li.agalthemean.ui.views.menuview
 				DefaultAssetStore.instance.getAdvancedPhongBitmapMaterial();
 			});
 
+			file1_7.addEventListener( AWEvent.ACT, function( event:AWEvent ):void {
+				DefaultAssetStore.instance.getEnviroSphericalMaterial();
+			});
+
 			file1.append( file1_1 );
 			file1.append( file1_2 );
 			file1.append( file1_3 );
 			file1.append( file1_4 );
 			file1.append( file1_5 );
 			file1.append( file1_6 );
+			file1.append( file1_7 );
 
 			menu.append( file1 );
 

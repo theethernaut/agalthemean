@@ -2,8 +2,8 @@ package com.li.agalthemean.ui.views.constantsview
 {
 
 	import com.li.agalthemean.ui.views.constantsview.ComponentAdjuster;
-	import com.li.minimole.materials.agal.vo.registers.RegisterConstant;
-	import com.li.minimole.materials.agal.vo.registers.VectorRegisterConstant;
+	import com.li.minimole.materials.agal.registers.RegisterConstant;
+	import com.li.minimole.materials.agal.registers.VectorRegisterConstant;
 
 	import flash.geom.Matrix3D;
 
