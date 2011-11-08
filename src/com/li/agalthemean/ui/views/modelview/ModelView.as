@@ -4,12 +4,15 @@ package com.li.agalthemean.ui.views.modelview
 	import com.li.agalthemean.ui.components.JTitledPanel;
 	import com.li.agalthemean.ui.views.modelview.XYZSetterPopUp;
 	import com.li.agalthemean.ui.views.renderview.DefaultAssetStore;
+	import com.li.agalthemean.utils.ObjPrompt;
 	import com.li.minimole.core.Core3D;
 	import com.li.minimole.core.Mesh;
 	import com.li.minimole.core.Scene3D;
 	import com.li.minimole.materials.agal.AGALMaterial;
 	import com.li.minimole.primitives.Cube;
 	import com.li.minimole.primitives.CubeR;
+
+	import flash.utils.ByteArray;
 
 	import org.aswing.JButton;
 	import org.aswing.JComboBox;
@@ -105,7 +108,7 @@ package com.li.agalthemean.ui.views.modelview
 			) );
 		}
 
-		private var _models:Array = [ "Head", "Hard Head", "Cube", "Sphere", "Hard Torus", "Plane"/*, "Load Model"*/ ];
+		private var _models:Array = [ "Head", "Hard Head", "Cube", "Sphere", "Hard Torus", "Plane", "Load Obj" ];
 
 		private function modelComboChangedHandler( event:AWEvent ):void {
 
@@ -138,11 +141,14 @@ package com.li.agalthemean.ui.views.modelview
 					break;
 				}
 				case 6: {
-					// TODO
+					var prompt:ObjPrompt = new ObjPrompt();
+					prompt.completeSignal.addOnce( onObjDataFetched );
 				}
 			}
+		}
 
-//			Core3D.instance.scene.addChild( _model );
+		private function onObjDataFetched( data:ByteArray ):void {
+			_model = DefaultAssetStore.instance.getLoadedModel( data );
 		}
 
 		public function set model( model:Mesh ):void {

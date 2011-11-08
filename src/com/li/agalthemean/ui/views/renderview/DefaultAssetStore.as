@@ -16,6 +16,7 @@ package com.li.agalthemean.ui.views.renderview
 	import com.li.minimole.primitives.Torus;
 
 	import flash.display.BitmapData;
+	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 
 	import org.osflash.signals.Signal;
@@ -56,11 +57,11 @@ package com.li.agalthemean.ui.views.renderview
 		public var headNormals:BitmapData;
 		public var headSpecular:BitmapData;
 		public var cubeNegX:BitmapData;
-		public var cubeNegY:BitmapData;
-		public var cubeNegZ:BitmapData;
-		public var cubePosX:BitmapData;
-		public var cubePosY:BitmapData;
-		public var cubePosZ:BitmapData;
+//		public var cubeNegY:BitmapData;
+//		public var cubeNegZ:BitmapData;
+//		public var cubePosX:BitmapData;
+//		public var cubePosY:BitmapData;
+//		public var cubePosZ:BitmapData;
 
 		private var _material:AGALMaterial;
 		private var _model:Mesh;
@@ -113,6 +114,13 @@ package com.li.agalthemean.ui.views.renderview
 		// ---------------------------------------------------------------------
 		// Models
 		// ---------------------------------------------------------------------
+
+		public function getLoadedModel( modelData:ByteArray ):Mesh {
+			_material.bothsides = false;
+			_model = new ObjParser( modelData, _material, 0.2 );
+			modelRequestedSignal.dispatch( _model );
+			return _model;
+		}
 
 		public function getHeadModel():Mesh {
 			_material.bothsides = false;
