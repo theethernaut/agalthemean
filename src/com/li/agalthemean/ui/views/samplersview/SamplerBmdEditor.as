@@ -3,7 +3,7 @@ package com.li.agalthemean.ui.views.samplersview
 
 	import com.li.agalthemean.utils.BitmapDataPrompt;
 	import com.li.minimole.core.utils.TextureUtils;
-	import com.li.minimole.materials.agal.registers.FragmentSampler;
+	import com.li.minimole.materials.agal.registers.samplers.FragmentSampler;
 
 	import flash.display.Bitmap;
 

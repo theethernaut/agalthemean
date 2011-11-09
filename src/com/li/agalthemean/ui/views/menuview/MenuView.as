@@ -48,6 +48,9 @@ package com.li.agalthemean.ui.views.menuview
 			var file1_5:JMenuItem = new JMenuItem( "Bitmap Phong Shader" );
 			var file1_6:JMenuItem = new JMenuItem( "Advanced Bitmap Phong Shader" );
 			var file1_7:JMenuItem = new JMenuItem( "Enviro Spherical Shader" );
+			var file1_8:JMenuItem = new JMenuItem( "Vertex Color Shader" );
+			var file1_9:JMenuItem = new JMenuItem( "Exploder Shader" );
+			var file1_10:JMenuItem = new JMenuItem( "Wireframe Shader" );
 
 			file1_1.addEventListener( AWEvent.ACT, function( event:AWEvent ):void {
 				DefaultAssetStore.instance.getEmptyMaterial();
@@ -77,6 +80,18 @@ package com.li.agalthemean.ui.views.menuview
 				DefaultAssetStore.instance.getEnviroSphericalMaterial();
 			});
 
+			file1_8.addEventListener( AWEvent.ACT, function( event:AWEvent ):void {
+				DefaultAssetStore.instance.getVertexColorMaterial();
+			});
+
+			file1_9.addEventListener( AWEvent.ACT, function( event:AWEvent ):void {
+				DefaultAssetStore.instance.getExploderMaterial();
+			});
+
+			file1_10.addEventListener( AWEvent.ACT, function( event:AWEvent ):void {
+				DefaultAssetStore.instance.getWireframeMaterial();
+			});
+
 			file1.append( file1_1 );
 			file1.append( file1_2 );
 			file1.append( file1_3 );
@@ -84,6 +99,9 @@ package com.li.agalthemean.ui.views.menuview
 			file1.append( file1_5 );
 			file1.append( file1_6 );
 			file1.append( file1_7 );
+			file1.append( file1_8 );
+			file1.append( file1_9 );
+			file1.append( file1_10 );
 
 			menu.append( file1 );
 

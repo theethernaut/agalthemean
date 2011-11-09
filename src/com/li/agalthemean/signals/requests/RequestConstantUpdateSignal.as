@@ -1,7 +1,7 @@
 package com.li.agalthemean.signals.requests
 {
 
-	import com.li.minimole.materials.agal.registers.RegisterConstant;
+	import com.li.minimole.materials.agal.registers.constants.RegisterConstant;
 
 	import org.osflash.signals.Signal;
 

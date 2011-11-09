@@ -9,6 +9,12 @@ package com.li.agalthemean.ui.views.renderview
 	import com.li.minimole.materials.agal.AGALMaterial;
 	import com.li.minimole.materials.agal.AGALPhongBitmapMaterial;
 	import com.li.minimole.materials.agal.AGALPhongColorMaterial;
+	import com.li.minimole.materials.agal.AGALVertexColorMaterial;
+	import com.li.minimole.materials.agal.AGALWireframeMaterial;
+	import com.li.minimole.materials.agal.mappings.RegisterMapping;
+	import com.li.minimole.materials.agal.registers.constants.RegisterConstant;
+	import com.li.minimole.materials.agal.registers.constants.VectorRegisterConstant;
+	import com.li.minimole.materials.agal.registers.attributes.VertexAttribute;
 	import com.li.minimole.parsers.ObjParser;
 	import com.li.minimole.primitives.CubeR;
 	import com.li.minimole.primitives.Plane;
@@ -16,6 +22,7 @@ package com.li.agalthemean.ui.views.renderview
 	import com.li.minimole.primitives.Torus;
 
 	import flash.display.BitmapData;
+	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	import flash.utils.setTimeout;
 
@@ -93,6 +100,7 @@ package com.li.agalthemean.ui.views.renderview
 			// -----------------------
 			setTimeout( function():void {
 
+				getVertexColorMaterial();
 				getAdvancedPhongBitmapMaterial();
 //				getPhongColorMaterial();
 //				getEnviroSphericalMaterial();
@@ -116,42 +124,36 @@ package com.li.agalthemean.ui.views.renderview
 		// ---------------------------------------------------------------------
 
 		public function getLoadedModel( modelData:ByteArray ):Mesh {
-			_material.bothsides = false;
 			_model = new ObjParser( modelData, _material, 0.2 );
 			modelRequestedSignal.dispatch( _model );
 			return _model;
 		}
 
 		public function getHeadModel():Mesh {
-			_material.bothsides = false;
 			_model = new ObjParser( HeadModel, _material, 0.2 );
 			modelRequestedSignal.dispatch( _model );
 			return _model;
 		}
 
 		public function getCubeModel():Mesh {
-			_material.bothsides = false;
 			_model = new CubeR( _material );
 			modelRequestedSignal.dispatch( _model );
 			return _model;
 		}
 
 		public function getSphereModel():Mesh {
-			_material.bothsides = false;
 			_model = new Sphere( _material, 1, 32, 24 );
 			modelRequestedSignal.dispatch( _model );
 			return _model;
 		}
 
 		public function getTorusModel():Mesh {
-			_material.bothsides = false;
 			_model = new Torus( _material, 0.8, 0.3 );
 			modelRequestedSignal.dispatch( _model );
 			return _model;
 		}
 
 		public function getPlaneModel():Mesh {
-			_material.bothsides = true;
 			_model = new Plane( _material );
 			modelRequestedSignal.dispatch( _model );
 			return _model;
@@ -160,6 +162,39 @@ package com.li.agalthemean.ui.views.renderview
 		// ---------------------------------------------------------------------
 		// Shaders
 		// ---------------------------------------------------------------------
+
+		public function getExploderMaterial():AGALMaterial {
+			_material = new AGALAdvancedPhongBitmapMaterial( headTexture, headNormals, headSpecular );
+			_material.addVertexAttribute( new VertexAttribute( "vertexNormals", VertexAttribute.NORMALS ) );
+			var exploder:RegisterConstant = _material.addVertexConstant( new VectorRegisterConstant( "exploder", 0, 0, 0, 0, new RegisterMapping( RegisterMapping.OSCILLATOR_MAPPING ) ) );
+			var smallRange:Point = new Point( 0, 0.05 );
+			VectorRegisterConstant( exploder ).setComponentRanges( smallRange, smallRange, smallRange, smallRange );
+			_material.vertexAGAL = "" +
+					"m44 vt0, va0, vc4 // calculate vertex positions in scene space\n" +
+					"mul vt1, va2.xyz, vc10.y // read normal and scale with exploder\n" +
+					"add vt0.xyz, vt0.xyz, vt1.xyz // displace vertex in normal dir\n" +
+					"sub v0, vc8, vt0 // interpolate direction to light\n" +
+					"sub v1, vc9, vt0 // interpolate direction to camera\n" +
+					"mov v2, va1 // interpolate uvs\n" +
+					"m44 op, vt0, vc0 // output position to clip space";
+			_model.material = _material;
+			materialRequestedSignal.dispatch( _material );
+			return _material;
+		}
+
+		public function getWireframeMaterial():AGALMaterial {
+			_material = new AGALWireframeMaterial( 0xFF0000, 0xCCCCCC );
+			_model.material = _material;
+			materialRequestedSignal.dispatch( _material );
+			return _material;
+		}
+
+		public function getVertexColorMaterial():AGALMaterial {
+			_material = new AGALVertexColorMaterial();
+			_model.material = _material;
+			materialRequestedSignal.dispatch( _material );
+			return _material;
+		}
 
 		public function getEnviroSphericalMaterial():AGALMaterial {
 			_material = new AGALEnviroSphericalMaterial( cubeNegX );

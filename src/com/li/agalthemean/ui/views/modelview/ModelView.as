@@ -1,6 +1,7 @@
 package com.li.agalthemean.ui.views.modelview
 {
 
+	import com.junkbyte.console.Cc;
 	import com.li.agalthemean.ui.components.JTitledPanel;
 	import com.li.agalthemean.ui.views.modelview.XYZSetterPopUp;
 	import com.li.agalthemean.ui.views.renderview.DefaultAssetStore;
@@ -15,6 +16,7 @@ package com.li.agalthemean.ui.views.modelview
 	import flash.utils.ByteArray;
 
 	import org.aswing.JButton;
+	import org.aswing.JCheckBox;
 	import org.aswing.JComboBox;
 	import org.aswing.JFrame;
 	import org.aswing.JPanel;
@@ -31,6 +33,7 @@ package com.li.agalthemean.ui.views.modelview
 		private var _rotationBtn:JButton;
 		private var _scaleBtn:JButton;
 		private var _modelCombo:JComboBox;
+		private var _bothsidesChk:JCheckBox;
 
 		public function ModelView() {
 
@@ -55,9 +58,17 @@ package com.li.agalthemean.ui.views.modelview
 			transform.append( _rotationBtn );
 			transform.append( _scaleBtn );
 
+			var options:JPanel = new JPanel( new SoftBoxLayout( SoftBoxLayout.Y_AXIS ) );
+			options.setBorder( new TitledBorder( null, "Mesh Options" ) );
+			_bothsidesChk = new JCheckBox( "bothsides" );
+			_bothsidesChk.setSelected( true );
+			_bothsidesChk.addEventListener( AWEvent.ACT, bothsidesChkClicked );
+			options.append( _bothsidesChk );
+
 			contentPanel.setLayout( new SoftBoxLayout( SoftBoxLayout.Y_AXIS ) );
 			contentPanel.append( geometry );
 			contentPanel.append( transform );
+			contentPanel.append( options );
 
 			_modelCombo.addEventListener( AWEvent.ACT, modelComboChangedHandler );
 
@@ -81,6 +92,10 @@ package com.li.agalthemean.ui.views.modelview
 				_scaleBtn.setEnabled( false );
 				centerPopUp( pop );
 			});
+		}
+
+		private function bothsidesChkClicked( event:AWEvent ):void {
+			_model.material.bothsides = _bothsidesChk.isSelected();
 		}
 
 		private function popUpClosedHandler( event:FrameEvent ):void {
@@ -145,14 +160,18 @@ package com.li.agalthemean.ui.views.modelview
 					prompt.completeSignal.addOnce( onObjDataFetched );
 				}
 			}
+
+			Cc.debug( "Changed model: " + _model.aabb );
 		}
 
 		private function onObjDataFetched( data:ByteArray ):void {
 			_model = DefaultAssetStore.instance.getLoadedModel( data );
+			Cc.debug( "Loaded model: " + _model.aabb );
 		}
 
 		public function set model( model:Mesh ):void {
 			_model = model;
+			_model.material.bothsides = _bothsidesChk.isSelected();
 		}
 	}
 }

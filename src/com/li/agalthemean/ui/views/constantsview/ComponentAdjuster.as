@@ -1,7 +1,7 @@
 package com.li.agalthemean.ui.views.constantsview
 {
 
-	import com.li.minimole.materials.agal.registers.VectorRegisterConstant;
+	import com.li.minimole.materials.agal.registers.constants.VectorRegisterConstant;
 
 	import flash.events.Event;
 

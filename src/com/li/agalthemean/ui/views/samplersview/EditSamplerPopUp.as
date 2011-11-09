@@ -3,7 +3,7 @@ package com.li.agalthemean.ui.views.samplersview
 
 	import com.li.agalthemean.ui.components.JRegisterPopUp;
 	import com.li.minimole.materials.agal.data.TextureMipMappingType;
-	import com.li.minimole.materials.agal.registers.FragmentSampler;
+	import com.li.minimole.materials.agal.registers.samplers.FragmentSampler;
 
 	import org.aswing.JCheckBox;
 	import org.aswing.event.AWEvent;

@@ -4,7 +4,7 @@ package com.li.agalthemean.ui.views.samplersview
 	import com.li.agalthemean.ui.components.JRegisterPanel;
 	import com.li.minimole.materials.agal.AGALMaterial;
 	import com.li.minimole.materials.agal.registers.AGALRegister;
-	import com.li.minimole.materials.agal.registers.FragmentSampler;
+	import com.li.minimole.materials.agal.registers.samplers.FragmentSampler;
 
 	public class SamplersView extends JRegisterPanel
 	{

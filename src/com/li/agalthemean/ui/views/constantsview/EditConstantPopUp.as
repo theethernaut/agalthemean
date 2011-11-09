@@ -3,8 +3,8 @@ package com.li.agalthemean.ui.views.constantsview
 
 	import com.li.agalthemean.ui.components.JRegisterPopUp;
 	import com.li.minimole.materials.agal.mappings.RegisterMapping;
-	import com.li.minimole.materials.agal.registers.RegisterConstant;
-	import com.li.minimole.materials.agal.registers.VectorRegisterConstant;
+	import com.li.minimole.materials.agal.registers.constants.RegisterConstant;
+	import com.li.minimole.materials.agal.registers.constants.VectorRegisterConstant;
 
 	import org.aswing.BorderLayout;
 	import org.aswing.JComboBox;
