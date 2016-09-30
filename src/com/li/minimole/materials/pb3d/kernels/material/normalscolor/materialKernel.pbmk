@@ -1,0 +1,36 @@
+<languageVersion : 1.0;>
+material kernel NormalsMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description : "Draws interpolated normals as RGB.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexNormal
+    <
+        id : "PB3D_NORMAL";
+    >;
+
+    // Interpolated.
+    interpolated float4 interpolatedColor;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        // Shift normal.
+        float4 clampedNormal = vertexNormal + float4(1.0, 1.0, 1.0, 0.0);
+        clampedNormal = clamp(vertexNormal, 0.0, 1.0);
+
+        // Interpolate result.
+        interpolatedColor = clampedNormal;
+    }
+
+    void evaluateFragment()
+    {
+        result = interpolatedColor;
+    }
+}

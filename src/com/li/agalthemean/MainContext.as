@@ -30,8 +30,9 @@ package com.li.agalthemean {
 
 	import flash.display.Sprite;
 	import flash.events.Event;
+import flash.utils.setTimeout;
 
-	import org.robotlegs.mvcs.SignalContext;
+import org.robotlegs.mvcs.SignalContext;
 
 	public class MainContext extends SignalContext {
 
@@ -66,7 +67,10 @@ package com.li.agalthemean {
 			mapCommands();
 
 			// init UI
-			contextView.addChild( new MainView() );
+			setTimeout(function() {
+				var mainView = new MainView();
+				contextView.addChild( mainView );
+			}, 1000);
 		}
 
 		private function mapCommands(  ):void {

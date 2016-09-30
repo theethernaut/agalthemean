@@ -1,0 +1,55 @@
+module_material_vertex_program WireframeMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Draws lines on triangle edges.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 lineColor
+        global parameter float-4 props
+        input vertex float-4 vertexColor
+            metadata
+                id const(string, "PB3D_COLOR")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 interpolatedVertexColor
+            metadata
+                id const(string, "_0_interpolatedVertexColor")
+            end_metadata
+    end_globals
+    
+    functions
+        external_function void evaluateVertex()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    vertexColorElem%A-0 = extractVE vertexColor, const(int, 0) : float
+                    vertexColorElem%B-0 = extractVE vertexColor, const(int, 1) : float
+                    vertexColorElem%C-0 = extractVE vertexColor, const(int, 2) : float
+                    _anonVec%A-0 = makeFloatVector vertexColorElem%A-0, vertexColorElem%B-0, vertexColorElem%C-0, const(float, 1) : float-4
+                    propsElem%A-0 = extractVE props, const(int, 0) : float
+                    _LD_interpolatedVertexColor-1 = mul _anonVec%A-0, propsElem%A-0 : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_interpolatedVertexColor-1, interpolatedVertexColor : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_material_vertex_program
+

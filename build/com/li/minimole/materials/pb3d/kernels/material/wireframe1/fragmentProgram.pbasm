@@ -1,0 +1,67 @@
+module_fragment_program WireframeMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Draws lines on triangle edges.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 lineColor
+        global parameter float-4 props
+        input vertex float-4 vertexColor
+            metadata
+                id const(string, "PB3D_COLOR")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 interpolatedVertexColor
+            metadata
+                id const(string, "_0_interpolatedVertexColor")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    R-0 = allocNonSSA type(float) : float
+                    G-0 = allocNonSSA type(float) : float
+                    B-0 = allocNonSSA type(float) : float
+                    D-0 = allocNonSSA type(float) : float
+                    L-0 = allocNonSSA type(float) : float
+                    C-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_R-1 = extractVE interpolatedVertexColor, const(int, 0) : float
+                    _LD_G-1 = extractVE interpolatedVertexColor, const(int, 1) : float
+                    _LD_B-1 = extractVE interpolatedVertexColor, const(int, 2) : float
+                    _minResult%A-0 = min _LD_G-1, _LD_B-1 : float
+                    _LD_D-1 = min _LD_R-1, _minResult%A-0 : float
+                    _mulResult%A-0 = mul const(float, -2), _LD_D-1 : float
+                    _mulResult%B-0 = mul _mulResult%A-0, _LD_D-1 : float
+                    _mulResult%C-0 = mul _mulResult%B-0, _LD_D-1 : float
+                    _LD_L-1 = exp2 _mulResult%C-0 : float
+                    _LD_C-1 = mul _LD_L-1, lineColor : float-4
+                    _LD_result-1 = insertVE const(float, 1), _LD_C-1, const(int, 3) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

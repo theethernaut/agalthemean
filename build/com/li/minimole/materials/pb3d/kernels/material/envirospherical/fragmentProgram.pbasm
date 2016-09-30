@@ -1,0 +1,120 @@
+module_fragment_program EnviroSimpleMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Adobe")
+        version const(int, 1)
+        description const(string, "Environment mapping material based on a single image.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        input image image-4 envMap
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 N
+            metadata
+                id const(string, "_1_N")
+            end_metadata
+        interpolated float-4 Q
+            metadata
+                id const(string, "_0_Q")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    fN-0 = allocNonSSA type(float-4) : float-4
+                    V-0 = allocNonSSA type(float-4) : float-4
+                    R-0 = allocNonSSA type(float-4) : float-4
+                    xUnit-0 = allocNonSSA type(float-4) : float-4
+                    yUnit-0 = allocNonSSA type(float-4) : float-4
+                    uvCoord-0 = allocNonSSA type(float-2) : float-2
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(conditionTestIf%A)
+                    _LD_V-1 = sub cameraPosition, Q : float-4
+                    _LD_V-2 = normalize _LD_V-1 : float-4
+                    _dotResult%A-0 = dot _LD_V-2, N : float
+                    _mulResult%A-0 = mul const(float, 2), _dotResult%A-0 : float
+                    _mulResult%B-0 = mul _mulResult%A-0, N : float-4
+                    _LD_R-1 = sub _LD_V-2, _mulResult%B-0 : float-4
+                    _LD_R-2 = normalize _LD_R-1 : float-4
+                    _LD_xUnit-1 = assign const(float-4, (1, 0, 0, 1)) : float-4
+                    _LD_yUnit-1 = assign const(float-4, (0, 1, 0, 1)) : float-4
+                    _LD_uvCoord-1 = assign const(float-2, (0, 0)) : float-2
+                    _dotResult%B-0 = dot _LD_R-2, _LD_yUnit-1 : float
+                    _LD_uvCoord-2 = insertVE _dotResult%B-0, _LD_uvCoord-1, const(int, 1) : float-2
+                    _LD_R-3 = insertVE const(float, 0), _LD_R-2, const(int, 1) : float-4
+                    _LD_R-4 = normalize _LD_R-3 : float-4
+                    _dotResult%C-0 = dot _LD_R-4, _LD_xUnit-1 : float
+                    _mulResult%C-0 = mul _dotResult%C-0, const(float, 0.5) : float
+                    _LD_uvCoord-3 = insertVE _mulResult%C-0, _LD_uvCoord-2, const(int, 0) : float-2
+                    jump block(conditionTestIf%A) : void
+                end_basic_block
+                if
+                    condition
+                        basic_block conditionTestIf%A !! inlets(basic%A) outlets(trueBranchIf%A, falseBranchIf%A%A)
+                            _LD_RElem%A-0 = extractVE _LD_R-4, const(int, 2) : float
+                            _testIf%A-0 = gte _LD_RElem%A-0, const(float, 0) : bool
+                            branch _testIf%A-0, block(trueBranchIf%A), block(falseBranchIf%A%A) : void
+                        end_basic_block
+                    end_condition
+                    then
+                        basic_block trueBranchIf%A !! inlets(conditionTestIf%A) outlets(basic%B)
+                            _LD_uvCoordElem%A-0 = extractVE _LD_uvCoord-3, const(int, 0) : float
+                            _addResult%A-0 = add _LD_uvCoordElem%A-0, const(float, 1) : float
+                            _mulResult%D-0 = mul _addResult%A-0, const(float, 0.5) : float
+                            _LD_uvCoord-4 = insertVE _mulResult%D-0, _LD_uvCoord-3, const(int, 0) : float-2
+                            _LD_uvCoordElem%B-0 = extractVE _LD_uvCoord-4, const(int, 1) : float
+                            _addResult%B-0 = add _LD_uvCoordElem%B-0, const(float, 1) : float
+                            _mulResult%E-0 = mul _addResult%B-0, const(float, 0.5) : float
+                            _LD_uvCoord-5 = insertVE _mulResult%E-0, _LD_uvCoord-4, const(int, 1) : float-2
+                            jump block(basic%B) : void
+                        end_basic_block
+                    end_then
+                    else
+                        basic_block falseBranchIf%A%A !! inlets(conditionTestIf%A) outlets(basic%B)
+                            _LD_uvCoordElem%C-0 = extractVE _LD_uvCoord-3, const(int, 1) : float
+                            _addResult%C-0 = add _LD_uvCoordElem%C-0, const(float, 1) : float
+                            _mulResult%F-0 = mul _addResult%C-0, const(float, 0.5) : float
+                            _LD_uvCoord-7 = insertVE _mulResult%F-0, _LD_uvCoord-3, const(int, 1) : float-2
+                            _LD_uvCoordElem%D-0 = extractVE _LD_uvCoord-7, const(int, 0) : float
+                            _negResult%A-0 = neg _LD_uvCoordElem%D-0 : float
+                            _mulResult%G-0 = mul _negResult%A-0, const(float, 0.5) : float
+                            _addResult%D-0 = add _mulResult%G-0, const(float, 1) : float
+                            _LD_uvCoord-8 = insertVE _addResult%D-0, _LD_uvCoord-7, const(int, 0) : float-2
+                            jump block(basic%B) : void
+                        end_basic_block
+                    end_else
+                end_if
+                basic_block basic%B !! inlets(trueBranchIf%A, falseBranchIf%A%A) outlets(exit%A)
+                    _LD_uvCoord-6 = phi edge(_LD_uvCoord-5, trueBranchIf%A), edge(_LD_uvCoord-8, falseBranchIf%A%A)      : float-2
+                    _LD_result-1 = sample envMap, _LD_uvCoord-6, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%B)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

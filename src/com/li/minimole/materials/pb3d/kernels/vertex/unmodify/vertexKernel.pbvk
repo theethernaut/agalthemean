@@ -1,0 +1,23 @@
+<languageVersion : 1.0;>
+vertex kernel UnmodifyVertexKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Li";
+    version : 1;
+    description : "Passes vertices with no projection.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id : "PB3D_POSITION";
+    >;
+
+    // Output.
+    output float4 vertexClipPosition;
+
+    void evaluateVertex() 
+    {
+        vertexClipPosition = vertexPosition;
+    }
+}

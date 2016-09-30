@@ -1,0 +1,78 @@
+<languageVersion : 1.0;>
+material kernel GouraudColorMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description: "Gouraud color shading material.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexNormal
+    <
+        id: "PB3D_NORMAL";
+    >;
+
+    // Parameters.
+    parameter float4x4 modelTransform;
+    parameter float4x4 modelReducedTransform;
+    parameter float4   diffuseReflectionColor;
+    parameter float4   specularReflectionColor;
+    parameter float4   lightPosition;
+    parameter float4   cameraPosition;
+    parameter float4   lightProperties;
+
+    // Interpolated.
+    interpolated float4 interpolatedColor;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        // Transform vertex position to world space.
+        float4 position = vertexPosition * modelTransform;
+
+        // Transform normal.
+        float4 normalT4 = vertexNormal * modelReducedTransform;
+
+        // Get light props.
+        float AC = lightProperties[0]; // Ambient intensity.
+        float DC = lightProperties[1]; // Diffuse intensity.
+        float SC = lightProperties[2]; // Specular intensity.
+        float m  = lightProperties[3]; // Sharpness/concentration.
+
+        // Get light direction.
+        float4 L = lightPosition - position;
+        L = L/length(L);
+
+        // Get view direction.
+        float4 V = cameraPosition - position;
+        V = V/length(V);
+
+        // Calculate diffuse term (not dependant on viewer position).
+        float NL = dot(normalT4, L);
+        //NL = max(NL, 0.0); // Ignore negative values.
+        float4 KD = diffuseReflectionColor*(AC + DC*NL); //AC*diffuseReflectionColor + DC*NL*diffuseReflectionColor;
+
+        // Calculate specular term.
+        float4 H =  L + V; // Half vector.
+        H = normalize(H);
+        float NH = dot(normalT4, H);
+        //NH = max(NH, 0.0); // Ignore negative values.
+        NH = pow(NH, m); // Apply sharpness.
+        float4 KS = SC*NH*specularReflectionColor;
+
+        // Send to fragment shader.
+        interpolatedColor = KD + KS;
+    }
+
+    void evaluateFragment()
+    {
+        result = interpolatedColor;
+    }
+}

@@ -1,0 +1,77 @@
+<languageVersion : 1.0;>
+material kernel EnviroSimpleMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Adobe";
+    version : 1;
+    description: "Environment mapping material based on a single image.";
+>
+{
+    // Input.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexNormal
+    <
+        id: "PB3D_NORMAL";
+    >;
+
+    input image4 envMap;
+
+    // Parameters.
+    parameter float4x4 modelTransform;
+    parameter float4x4 modelReducedTransform;
+    parameter float4 cameraPosition;
+
+    // Interpolated.
+    interpolated float4 Q;
+    interpolated float4 N;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        Q = vertexPosition * modelTransform;
+        N = vertexNormal * modelReducedTransform;
+    }
+
+    void evaluateFragment()
+    {
+        // Fix normal.
+        float4 fN = normalize(N);
+
+        // Get view direction.
+        float4 V = cameraPosition - Q;
+        V = normalize(V);
+
+        // Calculate reflection direction.
+        float4 R = V - 2.0*(dot(V, N))*N;
+        R = normalize(R);
+
+        // Compute elevation and azimuth angles.
+        float4 xUnit = float4(1.0, 0.0, 0.0, 1.0);
+        float4 yUnit = float4(0.0, 1.0, 0.0, 1.0);
+        float2 uvCoord = float2(0.0, 0.0);
+        uvCoord.y = dot(R, yUnit);
+        R.y = 0.0;
+        R = normalize(R);
+        uvCoord.x = dot(R, xUnit)*0.5;
+
+        // Contain uv.
+        if(R.z >= 0.0) // Bug: R.z not recognized.
+        {
+            uvCoord.x = (uvCoord.x + 1.0)*0.5;
+            uvCoord.y = (uvCoord.y + 1.0)*0.5;
+        }
+        else
+        {
+            uvCoord.y = (uvCoord.y + 1.0) * 0.5;
+            uvCoord.x = (-uvCoord.x) * 0.5 + 1.0;
+        }
+
+        // Output.
+        result = sample(envMap, uvCoord, PB3D_CLAMP);
+    }
+}

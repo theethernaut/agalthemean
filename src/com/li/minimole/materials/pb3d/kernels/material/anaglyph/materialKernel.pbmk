@@ -1,0 +1,60 @@
+<languageVersion : 1.0;>
+material kernel AnaglyphMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Adobe";
+    version : 1;
+    description: "Anaglyph material. Takes 2 images and combines them to form a 3D anaglyph.";
+>
+{
+    // Input.
+    input vertex float4 vertexUV
+    <
+        id: "PB3D_TEXTURE_COORDS";
+    >;
+
+    input image4 leftImage;
+    input image4 rightImage;
+
+    // Parameters.
+    parameter float4 props;
+    parameter float4 props1;
+
+    // Interpolated.
+    interpolated float4 interpolatedUV;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        interpolatedUV = vertexUV;
+    }
+
+    void evaluateFragment()
+    {
+        float green = props[0];
+        float blue  = props[1];
+        float gamma = props[2];
+        float offX = props1[0];
+        float offY = props1[1];
+
+        float2 coordL = float2(interpolatedUV.x + offX, interpolatedUV.y + offY);
+        float2 coordR = float2(interpolatedUV.x, interpolatedUV.y);
+
+        float4 L_col = sample(leftImage, coordL);
+        float4 R_col = sample(rightImage, coordR);
+
+        float g1_ = L_col.y + green * max(0.0, L_col.x - L_col.y);
+        float b1_ = L_col.z + blue  * max(0.0, L_col.x - L_col.z);
+
+        float g2_ = R_col.y + green * max(0.0, R_col.x - R_col.y);
+        float b2_ = R_col.z + blue  * max(0.0, R_col.x - R_col.z);
+
+        float ra_ = (178.5 * g1_ + 85.0 * b1_)/255.0;
+
+        float expo = float(1.0 - gamma);
+
+        result = float4(pow(ra_, expo), g2_, b2_, 1.0);
+    }
+}

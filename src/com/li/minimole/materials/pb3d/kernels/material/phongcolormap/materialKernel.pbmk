@@ -1,0 +1,96 @@
+<languageVersion : 1.0;>
+material kernel PhongColorMapMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description: "Phong color shading material that uses a normal map instead of vertex normals.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexUV
+    <
+        id: "PB3D_TEXTURE_COORDS";
+    >;
+    input image4 normalMap;
+
+    // Parameters.
+    parameter float4x4 modelTransform;
+    parameter float4x4 modelReducedTransform;
+    parameter float4 precomputedAmbient;
+    parameter float4 precomputedDiffuse;
+    parameter float4 precomputedSpecular;
+    parameter float4 lightPosition;
+    parameter float4 cameraPosition;
+    parameter float4 lightProperties;
+
+    // Interpolated.
+    interpolated float4 Q;
+    interpolated float4 iUV;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        // Send to fragment shader.
+        Q = vertexPosition * modelTransform;
+        iUV = vertexUV;
+    }
+
+    void evaluateFragment()
+    {
+        // Get light props.
+        float m  = lightProperties[3]; // Sharpness/concentration.
+
+        // Make uv float2.
+        float2 uvCoord = float2(iUV.x, iUV.y);
+
+        // Translate attributes and constants to floats.
+        float4 LP = lightPosition;
+        float4 CP = cameraPosition;
+        float4 ACD  = precomputedAmbient;
+        float4 DCD  = precomputedDiffuse;
+        float4 SCS  = precomputedSpecular;
+        float4 N  = sample(normalMap, uvCoord);
+        N.x = 2.0*N.x - 1.0;
+        N.y = 2.0*N.y - 1.0;
+        N.z = 2.0*N.z - 1.0;
+        N.z = -N.z;
+        N = N * modelReducedTransform;
+        //N = normalize(N);
+
+        // Get light direction.
+        float4 L = LP - Q;
+        L = normalize(L);
+
+        // Get view direction.
+        float4 V = CP - Q;
+        V = normalize(V);
+
+        // Calculate diffuse term (not dependant on viewer position).
+        float NL = dot(N, L);
+        NL = max(NL, 0.0); // Ignore negative values.
+        //NL = clamp(NL, 0.0, 1.0);
+        float4 KD = ACD + DCD*NL;
+
+        // Calculate specular term.
+        float4 H =  L + V; // Half vector.
+        H = normalize(H);
+        float NH = dot(N, H);
+        NH = max(NH, 0.0); // Ignore negative values.
+        //NH = clamp(NL, 0.0, 1.0);
+        NH = pow(NH, m); // Apply sharpness.
+        float4 KS = SCS*NH;
+
+        // Combine material and light colors.
+        float4 KT = KD + KS;
+
+        // Output.
+        result = KT;
+    }
+}

@@ -1,0 +1,53 @@
+<languageVersion : 1.0;>
+material kernel EnviroMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description: "Cube map reflective enviro material.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexNormal
+    <
+        id: "PB3D_NORMAL";
+    >;
+
+    input image4 cubeImage;
+
+    // Parameters.
+    parameter float4x4 modelTransform;
+    parameter float4x4 modelReducedTransform;
+    parameter float4 cameraPosition;
+
+    // Interpolated.
+    interpolated float4 Q;
+    interpolated float4 N;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        // Send to fragment shader.
+        Q = vertexPosition * modelTransform;
+        N = vertexNormal * modelReducedTransform;
+    }
+
+    void evaluateFragment()
+    {
+        // Calculate view direction.
+        float4 V = Q - cameraPosition;
+        V = normalize(V);
+
+        // Calculate reflection direction.
+        float4 R = V - 2.0*(dot(V, N))*N;
+
+        // Sample and out.
+        result = sample(cubeImage, R.xyz, PB3D_CUBE);
+    }
+}

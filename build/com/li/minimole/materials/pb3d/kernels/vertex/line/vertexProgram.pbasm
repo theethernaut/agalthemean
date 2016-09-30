@@ -1,0 +1,103 @@
+module_vertex_program LineVertexKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Projects vertices from object space to clip/screen space with an offset for line rendering.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4-4 objectToClipSpaceTransform
+        global parameter float-4 props
+        input vertex float-4 offsetDirection
+            metadata
+                id const(string, "PB3D_OFF_DIRECTION")
+            end_metadata
+        input vertex float-4 oppositeVertexPosition
+            metadata
+                id const(string, "PB3D_OP_POSITION")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        output clipcoord float-4 vertexClipPosition
+    end_globals
+    
+    functions
+        external_function void evaluateVertex()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    position-0 = allocNonSSA type(float-4) : float-4
+                    opPosition-0 = allocNonSSA type(float-4) : float-4
+                    thickness-0 = allocNonSSA type(float) : float
+                    L-0 = allocNonSSA type(float-4) : float-4
+                    D-0 = allocNonSSA type(float-4) : float-4
+                    P-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_position-1 = mul vertexPosition, objectToClipSpaceTransform : float-4
+                    _LD_opPosition-1 = mul oppositeVertexPosition, objectToClipSpaceTransform : float-4
+                    propsElem%A-0 = extractVE props, const(int, 0) : float
+                    _LD_thickness-1 = div propsElem%A-0, const(float, 2) : float
+                    _LD_L-1 = sub _LD_opPosition-1, _LD_position-1 : float-4
+                    _LD_L-2 = normalize _LD_L-1 : float-4
+                    _LD_D-1 = normalize _LD_opPosition-1 : float-4
+                    _LD_D-2 = insertVE const(float, 1), _LD_D-1, const(int, 3) : float-4
+                    _LD_LElem%A-0 = extractVE _LD_L-2, const(int, 1) : float
+                    _LD_DElem%A-0 = extractVE _LD_D-2, const(int, 2) : float
+                    _mulResult%C-0 = mul _LD_LElem%A-0, _LD_DElem%A-0 : float
+                    _LD_LElem%B-0 = extractVE _LD_L-2, const(int, 2) : float
+                    _LD_DElem%B-0 = extractVE _LD_D-2, const(int, 1) : float
+                    _mulResult%D-0 = mul _LD_LElem%B-0, _LD_DElem%B-0 : float
+                    _subResult%B-0 = sub _mulResult%C-0, _mulResult%D-0 : float
+                    _LD_LElem%C-0 = extractVE _LD_L-2, const(int, 2) : float
+                    _LD_DElem%C-0 = extractVE _LD_D-2, const(int, 0) : float
+                    _mulResult%E-0 = mul _LD_LElem%C-0, _LD_DElem%C-0 : float
+                    _LD_LElem%D-0 = extractVE _LD_L-2, const(int, 0) : float
+                    _LD_DElem%D-0 = extractVE _LD_D-2, const(int, 2) : float
+                    _mulResult%F-0 = mul _LD_LElem%D-0, _LD_DElem%D-0 : float
+                    _subResult%C-0 = sub _mulResult%E-0, _mulResult%F-0 : float
+                    _LD_LElem%E-0 = extractVE _LD_L-2, const(int, 0) : float
+                    _LD_DElem%E-0 = extractVE _LD_D-2, const(int, 1) : float
+                    _mulResult%G-0 = mul _LD_LElem%E-0, _LD_DElem%E-0 : float
+                    _LD_LElem%F-0 = extractVE _LD_L-2, const(int, 1) : float
+                    _LD_DElem%F-0 = extractVE _LD_D-2, const(int, 0) : float
+                    _mulResult%H-0 = mul _LD_LElem%F-0, _LD_DElem%F-0 : float
+                    _subResult%D-0 = sub _mulResult%G-0, _mulResult%H-0 : float
+                    _LD_P-1 = makeFloatVector _subResult%B-0, _subResult%C-0, _subResult%D-0, const(float, 1) : float-4
+                    _LD_P-2 = normalize _LD_P-1 : float-4
+                    offsetDirectionElem%A-0 = extractVE offsetDirection, const(int, 0) : float
+                    _mulResult%I-0 = mul _LD_P-2, offsetDirectionElem%A-0 : float-4
+                    _LD_P-3 = mul _mulResult%I-0, _LD_thickness-1 : float-4
+                    _LD_P-4 = insertVE const(float, 1), _LD_P-3, const(int, 3) : float-4
+                    _LD_positionElem%A-0 = extractVE _LD_position-1, const(int, 0) : float
+                    _LD_PElem%A-0 = extractVE _LD_P-4, const(int, 0) : float
+                    _addResult%A-0 = add _LD_positionElem%A-0, _LD_PElem%A-0 : float
+                    _LD_position-2 = insertVE _addResult%A-0, _LD_position-1, const(int, 0) : float-4
+                    _LD_positionElem%B-0 = extractVE _LD_position-2, const(int, 1) : float
+                    _LD_PElem%B-0 = extractVE _LD_P-4, const(int, 1) : float
+                    _addResult%B-0 = add _LD_positionElem%B-0, _LD_PElem%B-0 : float
+                    _LD_position-3 = insertVE _addResult%B-0, _LD_position-2, const(int, 1) : float-4
+                    _LD_positionElem%C-0 = extractVE _LD_position-3, const(int, 2) : float
+                    _LD_PElem%C-0 = extractVE _LD_P-4, const(int, 2) : float
+                    _addResult%C-0 = add _LD_positionElem%C-0, _LD_PElem%C-0 : float
+                    _LD_vertexClipPosition-1 = insertVE _addResult%C-0, _LD_position-3, const(int, 2) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_vertexClipPosition-1, vertexClipPosition : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_vertex_program
+

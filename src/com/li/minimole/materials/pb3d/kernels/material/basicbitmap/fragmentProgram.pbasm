@@ -1,0 +1,50 @@
+module_fragment_program BitmapMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Adobe")
+        version const(int, 1)
+        description const(string, "Bitmap material with no shading.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        input image image-4 inputImage
+        input vertex float-4 vertexUV
+            metadata
+                id const(string, "PB3D_TEXTURE_COORDS")
+            end_metadata
+        interpolated float-4 interpolatedUV
+            metadata
+                id const(string, "_0_interpolatedUV")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    coord-0 = allocNonSSA type(float-2) : float-2
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    interpolatedUVElem%A-0 = extractVE interpolatedUV, const(int, 0) : float
+                    interpolatedUVElem%B-0 = extractVE interpolatedUV, const(int, 1) : float
+                    _LD_coord-1 = makeFloatVector interpolatedUVElem%A-0, interpolatedUVElem%B-0 : float-2
+                    _LD_result-1 = sample inputImage, _LD_coord-1, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

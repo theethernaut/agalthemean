@@ -1,0 +1,32 @@
+<languageVersion : 1.0;>
+material kernel VertexColorMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Li";
+    version : 1;
+    description : "Solid color, unshaded, per vertex.";
+>
+{
+    // Input.
+    input vertex float4 vertexColor
+    <
+        id : "PB3D_COLOR";
+    >;
+
+    // Interpolated.
+    interpolated float4 interpolatedColor;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        float4 vCol = vertexColor * float4(1.0, 1.0, 1.0, 1.0);
+        interpolatedColor = vCol;
+    }
+
+    void evaluateFragment()
+    {
+        result = interpolatedColor;
+    }
+}

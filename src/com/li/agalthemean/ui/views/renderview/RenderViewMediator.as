@@ -17,7 +17,6 @@ package com.li.agalthemean.ui.views.renderview
 		[Inject]
 		public var requestMaterialRegisterSignal:RequestMaterialRegistrationSignal;
 
-
 		[Inject]
 		public var requestModelRegistrationSignal:RequestModelRegistrationSignal;
 

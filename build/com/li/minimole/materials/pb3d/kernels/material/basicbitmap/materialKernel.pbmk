@@ -1,0 +1,33 @@
+<languageVersion : 1.0;>
+material kernel BitmapMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Adobe";
+    version : 1;
+    description: "Bitmap material with no shading.";
+>
+{
+    // Input.
+    input vertex float4 vertexUV
+    <
+        id: "PB3D_TEXTURE_COORDS";
+    >;
+    input image4 inputImage;
+
+    // Interpolated.
+    interpolated float4 interpolatedUV;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        interpolatedUV = vertexUV;
+    }
+
+    void evaluateFragment()
+    {
+        float2 coord = float2(interpolatedUV.x, interpolatedUV.y);
+        result = sample(inputImage, coord);
+    }
+}

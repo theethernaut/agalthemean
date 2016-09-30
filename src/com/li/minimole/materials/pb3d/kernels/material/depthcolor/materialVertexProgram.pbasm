@@ -1,0 +1,57 @@
+module_material_vertex_program DepthMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Darkens a solid color according to distance to the camera.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        global parameter float-4 materialColor
+        global parameter float-4-4 worldTransform
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 interpolatedColor
+            metadata
+                id const(string, "_0_interpolatedColor")
+            end_metadata
+    end_globals
+    
+    functions
+        external_function void evaluateVertex()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    vertexPosWorld-0 = allocNonSSA type(float-4) : float-4
+                    delta-0 = allocNonSSA type(float-3) : float-3
+                    dis-0 = allocNonSSA type(float) : float
+                    col-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_vertexPosWorld-1 = mul vertexPosition, worldTransform : float-4
+                    _anonSwizzle%A-0 = swizzleRHS _LD_vertexPosWorld-1, const(int-3, (0, 1, 2)) : float-3
+                    _anonSwizzle%B-0 = swizzleRHS cameraPosition, const(int-3, (0, 1, 2)) : float-3
+                    _LD_delta-1 = sub _anonSwizzle%A-0, _anonSwizzle%B-0 : float-3
+                    _dotResult%A-0 = dot _LD_delta-1, _LD_delta-1 : float
+                    _LD_dis-1 = sqrt _dotResult%A-0 : float
+                    _LD_interpolatedColor-1 = div materialColor, _LD_dis-1 : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_interpolatedColor-1, interpolatedColor : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_material_vertex_program
+

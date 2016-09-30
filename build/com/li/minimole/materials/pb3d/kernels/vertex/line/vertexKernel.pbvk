@@ -1,0 +1,65 @@
+<languageVersion : 1.0;>
+vertex kernel LineVertexKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Li";
+    version : 1;
+    description : "Projects vertices from object space to clip/screen space with an offset for line rendering.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id : "PB3D_POSITION";
+    >;
+    input vertex float4 oppositeVertexPosition
+    <
+        id : "PB3D_OP_POSITION";
+    >;
+    input vertex float4 offsetDirection
+    <
+        id : "PB3D_OFF_DIRECTION";
+    >;
+
+    // Parameters.
+    parameter float4x4 objectToClipSpaceTransform;
+    parameter float4 props;
+
+    // Output.
+    output float4 vertexClipPosition;
+
+    void evaluateVertex() 
+    {
+        // Project positions to clip space.
+        float4 position = vertexPosition * objectToClipSpaceTransform;
+        float4 opPosition = oppositeVertexPosition * objectToClipSpaceTransform;
+
+        // Extract thickness value.
+        float thickness = props[0]/2.0;
+
+        // Calculate line direction.
+        float4 L = opPosition - position;
+        L = normalize(L);
+
+        // Calculate opPosition direction.
+        float4 D = normalize(opPosition);
+        D.w = 1.0;
+
+        // Calculate line perpendicular.
+        // Something is wrong with cross() in PB3D, calc manually.
+        float4 P = float4(L.y*D.z - L.z*D.y, L.z*D.x - L.x*D.z, L.x*D.y - L.y*D.x, 1.0);
+        P = normalize(P);
+
+        // Apply weight and direction.
+        P = P*offsetDirection[0]*thickness;
+        P.w = 1.0;
+
+        // Shift vertex.
+        position.x += P.x;
+        position.y += P.y;
+        position.z += P.z;
+
+        // Output shifted vertex.
+        vertexClipPosition = position;
+    }
+}

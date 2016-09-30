@@ -1,0 +1,28 @@
+<languageVersion : 1.0;>
+material kernel SolidColorMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Li";
+    version : 1;
+    description : "Solid color, unshaded material.";
+>
+{
+    // Parameters.
+    parameter float4 colorParam;
+
+    // Interpolated.
+    interpolated float4 color;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        color = colorParam;
+    }
+
+    void evaluateFragment()
+    {
+        result = colorParam;
+    }
+}

@@ -1,0 +1,67 @@
+module_fragment_program XRayMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Transparency effect.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        global parameter float-4 materialColor
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        global parameter float-4 props
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 N
+            metadata
+                id const(string, "_1_N")
+            end_metadata
+        interpolated float-4 Q
+            metadata
+                id const(string, "_0_Q")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    L-0 = allocNonSSA type(float-4) : float-4
+                    opacity-0 = allocNonSSA type(float) : float
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_L-1 = sub cameraPosition, Q : float-4
+                    _LD_L-2 = normalize _LD_L-1 : float-4
+                    _LD_opacity-1 = dot N, _LD_L-2 : float
+                    _LD_opacity-2 = abs _LD_opacity-1 : float
+                    propsElem%A-0 = extractVE props, const(int, 0) : float
+                    _powResult%A-0 = pow _LD_opacity-2, propsElem%A-0 : float
+                    _LD_opacity-3 = sub const(float, 1), _powResult%A-0 : float
+                    _LD_result-1 = mul _LD_opacity-3, materialColor : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

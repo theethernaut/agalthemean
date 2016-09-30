@@ -1,0 +1,123 @@
+module_fragment_program PhongBitmapMaterialKernel
+
+    metadata
+        namespace const(string, "Phong bitmap shading material.")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Phong bitmap material based on a normal map and a specular map.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        input image image-4 diffuseImage
+        global parameter float-4 lightPosition
+        global parameter float-4 lightProperties
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        input image image-4 normalMap
+        input image image-4 specularMap
+        global parameter float-4 specularReflectionColor
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        input vertex float-4 vertexUV
+            metadata
+                id const(string, "PB3D_TEXTURE_COORD")
+            end_metadata
+        interpolated float-4 Q
+            metadata
+                id const(string, "_0_Q")
+            end_metadata
+        interpolated float-4 iUV
+            metadata
+                id const(string, "_1_iUV")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    AC-0 = allocNonSSA type(float) : float
+                    DC-0 = allocNonSSA type(float) : float
+                    SC-0 = allocNonSSA type(float) : float
+                    m-0 = allocNonSSA type(float) : float
+                    uvCoord-0 = allocNonSSA type(float-2) : float-2
+                    D-0 = allocNonSSA type(float-4) : float-4
+                    N-0 = allocNonSSA type(float-4) : float-4
+                    S-0 = allocNonSSA type(float-4) : float-4
+                    L-0 = allocNonSSA type(float-4) : float-4
+                    V-0 = allocNonSSA type(float-4) : float-4
+                    NL-0 = allocNonSSA type(float) : float
+                    KD-0 = allocNonSSA type(float-4) : float-4
+                    H-0 = allocNonSSA type(float-4) : float-4
+                    NH-0 = allocNonSSA type(float) : float
+                    KS-0 = allocNonSSA type(float-4) : float-4
+                    KT-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_AC-1 = extractVE lightProperties, const(int, 0) : float
+                    _LD_DC-1 = extractVE lightProperties, const(int, 1) : float
+                    _LD_SC-1 = extractVE lightProperties, const(int, 2) : float
+                    _LD_m-1 = extractVE lightProperties, const(int, 3) : float
+                    iUVElem%A-0 = extractVE iUV, const(int, 0) : float
+                    iUVElem%B-0 = extractVE iUV, const(int, 1) : float
+                    _LD_uvCoord-1 = makeFloatVector iUVElem%A-0, iUVElem%B-0 : float-2
+                    _LD_D-1 = sample diffuseImage, _LD_uvCoord-1, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    _LD_N-1 = sample normalMap, _LD_uvCoord-1, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    _LD_NElem%A-0 = extractVE _LD_N-1, const(int, 0) : float
+                    _mulResult%A-0 = mul const(float, 2), _LD_NElem%A-0 : float
+                    _subResult%A-0 = sub _mulResult%A-0, const(float, 1) : float
+                    _LD_N-2 = insertVE _subResult%A-0, _LD_N-1, const(int, 0) : float-4
+                    _LD_NElem%B-0 = extractVE _LD_N-2, const(int, 1) : float
+                    _mulResult%B-0 = mul const(float, 2), _LD_NElem%B-0 : float
+                    _subResult%B-0 = sub _mulResult%B-0, const(float, 1) : float
+                    _LD_N-3 = insertVE _subResult%B-0, _LD_N-2, const(int, 1) : float-4
+                    _LD_NElem%C-0 = extractVE _LD_N-3, const(int, 2) : float
+                    _mulResult%C-0 = mul const(float, 2), _LD_NElem%C-0 : float
+                    _subResult%C-0 = sub _mulResult%C-0, const(float, 1) : float
+                    _LD_N-4 = insertVE _subResult%C-0, _LD_N-3, const(int, 2) : float-4
+                    _LD_NElem%D-0 = extractVE _LD_N-4, const(int, 2) : float
+                    _negResult%A-0 = neg _LD_NElem%D-0 : float
+                    _LD_N-5 = insertVE _negResult%A-0, _LD_N-4, const(int, 2) : float-4
+                    _LD_N-6 = mul _LD_N-5, modelReducedTransform : float-4
+                    _LD_S-1 = assign specularReflectionColor : float-4
+                    _LD_L-1 = sub lightPosition, Q : float-4
+                    _LD_L-2 = normalize _LD_L-1 : float-4
+                    _LD_V-1 = sub cameraPosition, Q : float-4
+                    _LD_V-2 = normalize _LD_V-1 : float-4
+                    _LD_NL-1 = dot _LD_N-6, _LD_L-2 : float
+                    _LD_NL-2 = max _LD_NL-1, const(float, 0) : float
+                    _mulResult%E-0 = mul _LD_AC-1, _LD_D-1 : float-4
+                    _mulResult%F-0 = mul _LD_DC-1, _LD_NL-2 : float
+                    _mulResult%G-0 = mul _mulResult%F-0, _LD_D-1 : float-4
+                    _LD_KD-1 = add _mulResult%E-0, _mulResult%G-0 : float-4
+                    _LD_H-1 = add _LD_L-2, _LD_V-2 : float-4
+                    _LD_H-2 = normalize _LD_H-1 : float-4
+                    _LD_NH-1 = dot _LD_N-6, _LD_H-2 : float
+                    _LD_NH-2 = max _LD_NH-1, const(float, 0) : float
+                    _LD_NH-3 = pow _LD_NH-2, _LD_m-1 : float
+                    _mulResult%H-0 = mul _LD_SC-1, _LD_NH-3 : float
+                    _mulResult%I-0 = mul _mulResult%H-0, _LD_S-1 : float-4
+                    _sampleResult%C-0 = sample specularMap, _LD_uvCoord-1, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    _LD_KS-1 = mul _mulResult%I-0, _sampleResult%C-0 : float-4
+                    _LD_result-1 = add _LD_KD-1, _LD_KS-1 : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

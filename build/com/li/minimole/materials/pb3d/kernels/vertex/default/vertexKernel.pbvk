@@ -1,0 +1,26 @@
+<languageVersion : 1.0;>
+vertex kernel DefaultVertexKernel
+<
+    namespace : "com.li.minimole";
+    vendor : "Li";
+    version : 1;
+    description : "Projects vertices from object space to clip/screen space.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id : "PB3D_POSITION";
+    >;
+
+    // Parameters.
+    parameter float4x4 objectToClipSpaceTransform;
+
+    // Output.
+    output float4 vertexClipPosition;
+
+    void evaluateVertex() 
+    {
+        vertexClipPosition = vertexPosition * objectToClipSpaceTransform;
+    }
+}

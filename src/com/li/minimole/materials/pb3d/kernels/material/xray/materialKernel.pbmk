@@ -1,0 +1,56 @@
+<languageVersion : 1.0;>
+material kernel XRayMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description: "Transparency effect.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexNormal
+    <
+        id: "PB3D_NORMAL";
+    >;
+
+    // Parameters.
+    parameter float4x4 modelTransform;
+    parameter float4x4 modelReducedTransform;
+    parameter float4 materialColor;
+    parameter float4 cameraPosition;
+    parameter float4 props;
+
+    // Interpolated.
+    interpolated float4 Q;
+    interpolated float4 N;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        // Transform vertex position to world space.
+        Q = vertexPosition * modelTransform;
+
+        // Transform normal.
+        N = vertexNormal * modelReducedTransform;
+    }
+
+    void evaluateFragment()
+    {
+        N = normalize(N);
+
+        float4 L = cameraPosition - Q;
+        L = normalize(L);
+
+        float opacity = dot(N, L);
+        opacity = abs(opacity);
+        opacity = 1.0 - pow(opacity, props[0]);
+
+        result = opacity * materialColor;
+    }
+}

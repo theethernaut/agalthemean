@@ -1,0 +1,68 @@
+module_fragment_program EnviroMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Cube map reflective enviro material.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        input image image-4 cubeImage
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 N
+            metadata
+                id const(string, "_1_N")
+            end_metadata
+        interpolated float-4 Q
+            metadata
+                id const(string, "_0_Q")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    V-0 = allocNonSSA type(float-4) : float-4
+                    R-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_V-1 = sub Q, cameraPosition : float-4
+                    _LD_V-2 = normalize _LD_V-1 : float-4
+                    _dotResult%A-0 = dot _LD_V-2, N : float
+                    _mulResult%A-0 = mul const(float, 2), _dotResult%A-0 : float
+                    _mulResult%B-0 = mul _mulResult%A-0, N : float-4
+                    _LD_R-1 = sub _LD_V-2, _mulResult%B-0 : float-4
+                    _LD_RElem%A-0 = extractVE _LD_R-1, const(int, 0) : float
+                    _LD_RElem%B-0 = extractVE _LD_R-1, const(int, 1) : float
+                    _anonVec%A-0 = makeFloatVector _LD_RElem%A-0, _LD_RElem%B-0 : float-2
+                    _LD_result-1 = sample cubeImage, _anonVec%A-0, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

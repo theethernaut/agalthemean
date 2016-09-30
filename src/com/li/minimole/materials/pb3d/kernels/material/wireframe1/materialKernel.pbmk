@@ -1,0 +1,50 @@
+<languageVersion : 1.0;>
+material kernel WireframeMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description : "Draws lines on triangle edges.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexColor
+    <
+        id: "PB3D_COLOR";
+    >;
+
+    // Parameters.
+    parameter float4 lineColor;
+    parameter float4 props;
+
+    // Interpolated.
+    interpolated float4 interpolatedVertexColor;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        interpolatedVertexColor = float4(vertexColor.x, vertexColor.y, vertexColor.z, 1.0) * props[0];
+    }
+
+    void evaluateFragment()
+    {
+        float R = interpolatedVertexColor.x;
+        float G = interpolatedVertexColor.y;
+        float B = interpolatedVertexColor.z;
+
+        float D = min(R, min(G, B));
+
+        float L = exp2(-2.0 * D * D * D);
+
+        float4 C = L * lineColor;
+        C.w = 1.0;
+
+        result = C;
+    }
+}

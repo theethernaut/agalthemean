@@ -1,0 +1,90 @@
+module_material_vertex_program GouraudColorMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Gouraud color shading material.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        global parameter float-4 diffuseReflectionColor
+        global parameter float-4 lightPosition
+        global parameter float-4 lightProperties
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        global parameter float-4 specularReflectionColor
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 interpolatedColor
+            metadata
+                id const(string, "_0_interpolatedColor")
+            end_metadata
+    end_globals
+    
+    functions
+        external_function void evaluateVertex()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    position-0 = allocNonSSA type(float-4) : float-4
+                    normalT4-0 = allocNonSSA type(float-4) : float-4
+                    AC-0 = allocNonSSA type(float) : float
+                    DC-0 = allocNonSSA type(float) : float
+                    SC-0 = allocNonSSA type(float) : float
+                    m-0 = allocNonSSA type(float) : float
+                    L-0 = allocNonSSA type(float-4) : float-4
+                    V-0 = allocNonSSA type(float-4) : float-4
+                    NL-0 = allocNonSSA type(float) : float
+                    KD-0 = allocNonSSA type(float-4) : float-4
+                    H-0 = allocNonSSA type(float-4) : float-4
+                    NH-0 = allocNonSSA type(float) : float
+                    KS-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_position-1 = mul vertexPosition, modelTransform : float-4
+                    _LD_normalT4-1 = mul vertexNormal, modelReducedTransform : float-4
+                    _LD_AC-1 = extractVE lightProperties, const(int, 0) : float
+                    _LD_DC-1 = extractVE lightProperties, const(int, 1) : float
+                    _LD_SC-1 = extractVE lightProperties, const(int, 2) : float
+                    _LD_m-1 = extractVE lightProperties, const(int, 3) : float
+                    _LD_L-1 = sub lightPosition, _LD_position-1 : float-4
+                    _lengthResult%A-0 = length _LD_L-1 : float
+                    _LD_L-2 = div _LD_L-1, _lengthResult%A-0 : float-4
+                    _LD_V-1 = sub cameraPosition, _LD_position-1 : float-4
+                    _lengthResult%B-0 = length _LD_V-1 : float
+                    _LD_V-2 = div _LD_V-1, _lengthResult%B-0 : float-4
+                    _LD_NL-1 = dot _LD_normalT4-1, _LD_L-2 : float
+                    _mulResult%C-0 = mul _LD_DC-1, _LD_NL-1 : float
+                    _addResult%A-0 = add _LD_AC-1, _mulResult%C-0 : float
+                    _LD_KD-1 = mul diffuseReflectionColor, _addResult%A-0 : float-4
+                    _LD_H-1 = add _LD_L-2, _LD_V-2 : float-4
+                    _LD_H-2 = normalize _LD_H-1 : float-4
+                    _LD_NH-1 = dot _LD_normalT4-1, _LD_H-2 : float
+                    _LD_NH-2 = pow _LD_NH-1, _LD_m-1 : float
+                    _mulResult%E-0 = mul _LD_SC-1, _LD_NH-2 : float
+                    _LD_KS-1 = mul _mulResult%E-0, specularReflectionColor : float-4
+                    _LD_interpolatedColor-1 = add _LD_KD-1, _LD_KS-1 : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_interpolatedColor-1, interpolatedColor : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_material_vertex_program
+

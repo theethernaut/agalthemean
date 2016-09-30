@@ -1,0 +1,105 @@
+module_material_vertex_program WireframeMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Draws lines on triangle edges.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        global parameter float-4 diffuseColor
+        global parameter float-4 diffuseReflectionColor
+        global parameter float-4 lightPosition
+        global parameter float-4 lightProperties
+        global parameter float-4 lineColor
+        global parameter float-4 props
+        input vertex float-4 vertexColor
+            metadata
+                id const(string, "PB3D_COLOR")
+            end_metadata
+        input vertex float-4 vertexExtra
+            metadata
+                id const(string, "PB3D_UV")
+            end_metadata
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 interpolatedDiffuseColor
+            metadata
+                id const(string, "_0_interpolatedDiffuseColor")
+            end_metadata
+        interpolated float-4 interpolatedVertexColor
+            metadata
+                id const(string, "_1_interpolatedVertexColor")
+            end_metadata
+    end_globals
+    
+    functions
+        external_function void evaluateVertex()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    AC-0 = allocNonSSA type(float) : float
+                    DC-0 = allocNonSSA type(float) : float
+                    L-0 = allocNonSSA type(float-4) : float-4
+                    NL-0 = allocNonSSA type(float) : float
+                    V-0 = allocNonSSA type(float-4) : float-4
+                    distanceToCamera-0 = allocNonSSA type(float) : float
+                    factor-0 = allocNonSSA type(float) : float
+                    rf-0 = allocNonSSA type(float) : float
+                    gf-0 = allocNonSSA type(float) : float
+                    bf-0 = allocNonSSA type(float) : float
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_AC-1 = extractVE lightProperties, const(int, 0) : float
+                    _LD_DC-1 = extractVE lightProperties, const(int, 1) : float
+                    _LD_L-1 = sub lightPosition, vertexPosition : float-4
+                    _lengthResult%A-0 = length _LD_L-1 : float
+                    _LD_L-2 = div _LD_L-1, _lengthResult%A-0 : float-4
+                    _LD_NL-1 = dot vertexNormal, _LD_L-2 : float
+                    _mulResult%A-0 = mul _LD_AC-1, diffuseReflectionColor : float-4
+                    _mulResult%B-0 = mul _LD_DC-1, _LD_NL-1 : float
+                    _mulResult%C-0 = mul _mulResult%B-0, diffuseReflectionColor : float-4
+                    _LD_interpolatedDiffuseColor-1 = add _mulResult%A-0, _mulResult%C-0 : float-4
+                    _LD_V-1 = sub cameraPosition, vertexPosition : float-4
+                    _LD_distanceToCamera-1 = length _LD_V-1 : float
+                    propsElem%A-0 = extractVE props, const(int, 0) : float
+                    _mulResult%D-0 = mul propsElem%A-0, const(float, 10) : float
+                    _LD_factor-1 = div _mulResult%D-0, _LD_distanceToCamera-1 : float
+                    vertexExtraElem%A-0 = extractVE vertexExtra, const(int, 0) : float
+                    _LD_rf-1 = mul vertexExtraElem%A-0, _LD_factor-1 : float
+                    vertexExtraElem%B-0 = extractVE vertexExtra, const(int, 1) : float
+                    _LD_gf-1 = mul vertexExtraElem%B-0, _LD_factor-1 : float
+                    vertexExtraElem%C-0 = extractVE vertexExtra, const(int, 2) : float
+                    _LD_bf-1 = mul vertexExtraElem%C-0, _LD_factor-1 : float
+                    vertexColorElem%A-0 = extractVE vertexColor, const(int, 0) : float
+                    _mulResult%H-0 = mul vertexColorElem%A-0, _LD_rf-1 : float
+                    vertexColorElem%B-0 = extractVE vertexColor, const(int, 1) : float
+                    _mulResult%I-0 = mul vertexColorElem%B-0, _LD_gf-1 : float
+                    vertexColorElem%C-0 = extractVE vertexColor, const(int, 2) : float
+                    _mulResult%J-0 = mul vertexColorElem%C-0, _LD_bf-1 : float
+                    _LD_interpolatedVertexColor-1 = makeFloatVector _mulResult%H-0, _mulResult%I-0, _mulResult%J-0, const(float, 1) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_interpolatedDiffuseColor-1, interpolatedDiffuseColor : void
+                    moveToNonSSA _LD_interpolatedVertexColor-1, interpolatedVertexColor : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_material_vertex_program
+

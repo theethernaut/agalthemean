@@ -1,0 +1,86 @@
+<languageVersion : 1.0;>
+material kernel WireframeMaterialKernel
+<
+    namespace : "com.li.minimole";
+    vendor    : "Li";
+    version   : 1;
+    description : "Draws lines on triangle edges.";
+>
+{
+    // Inputs.
+    input vertex float4 vertexPosition
+    <
+        id: "PB3D_POSITION";
+    >;
+    input vertex float4 vertexNormal
+    <
+        id: "PB3D_NORMAL";
+    >;
+    input vertex float4 vertexColor
+    <
+        id: "PB3D_COLOR";
+    >;
+    input vertex float4 vertexExtra
+    <
+        id: "PB3D_UV";
+    >;
+
+    // Parameters.
+    parameter float4 lineColor;
+    parameter float4 diffuseColor;
+    parameter float4 props;
+    parameter float4 cameraPosition;
+    parameter float4 lightProperties;
+    parameter float4 lightPosition;
+    parameter float4 diffuseReflectionColor;
+
+    // Interpolated.
+    interpolated float4 interpolatedDiffuseColor;
+    interpolated float4 interpolatedVertexColor;
+
+    // Output.
+    output float4 result;
+
+    void evaluateVertex()
+    {
+        // Get light props.
+        float AC = lightProperties[0]; // Ambient intensity.
+        float DC = lightProperties[1]; // Diffuse intensity.
+
+        // Get light direction.
+        float4 L = lightPosition - vertexPosition;
+        L = L/length(L);
+
+        // Calculate diffuse term (not dependant on viewer position).
+        float NL = dot(vertexNormal, L);
+        //NL = max(NL, 0.0); // Ignore negative values.
+        interpolatedDiffuseColor = AC*diffuseReflectionColor + DC*NL*diffuseReflectionColor;
+
+        // Consider camera distance for line thickness.
+        float4 V = cameraPosition - vertexPosition;
+        float distanceToCamera = length(V);
+
+        // Interpolate vertex colors as distance to vertex info considering triangle size and shape.
+        float factor = props[0] * 10.0 / distanceToCamera;
+        float rf = vertexExtra.x * factor;
+        float gf = vertexExtra.y * factor;
+        float bf = vertexExtra.z * factor;
+        interpolatedVertexColor = float4(vertexColor.x * rf, vertexColor.y * gf, vertexColor.z * bf, 1.0);
+    }
+
+    void evaluateFragment()
+    {
+        float R = interpolatedVertexColor.x;
+        float G = interpolatedVertexColor.y;
+        float B = interpolatedVertexColor.z;
+
+        float D = min(R, min(G, B));
+
+        float L = exp2(-2.0 * D * D);
+
+        float4 C = L * lineColor + (1.0 - L) * interpolatedDiffuseColor;
+        C.w = 1.0;
+
+        result = C;
+    }
+}

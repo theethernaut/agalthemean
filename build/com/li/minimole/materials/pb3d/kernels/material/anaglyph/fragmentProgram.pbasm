@@ -1,0 +1,113 @@
+module_fragment_program AnaglyphMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Adobe")
+        version const(int, 1)
+        description const(string, "Anaglyph material. Takes 2 images and combines them to form a 3D anaglyph.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        input image image-4 leftImage
+        global parameter float-4 props
+        global parameter float-4 props1
+        input image image-4 rightImage
+        input vertex float-4 vertexUV
+            metadata
+                id const(string, "PB3D_TEXTURE_COORDS")
+            end_metadata
+        interpolated float-4 interpolatedUV
+            metadata
+                id const(string, "_0_interpolatedUV")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    green-0 = allocNonSSA type(float) : float
+                    blue-0 = allocNonSSA type(float) : float
+                    gamma-0 = allocNonSSA type(float) : float
+                    offX-0 = allocNonSSA type(float) : float
+                    offY-0 = allocNonSSA type(float) : float
+                    coordL-0 = allocNonSSA type(float-2) : float-2
+                    coordR-0 = allocNonSSA type(float-2) : float-2
+                    L_col-0 = allocNonSSA type(float-4) : float-4
+                    R_col-0 = allocNonSSA type(float-4) : float-4
+                    g1_-0 = allocNonSSA type(float) : float
+                    b1_-0 = allocNonSSA type(float) : float
+                    g2_-0 = allocNonSSA type(float) : float
+                    b2_-0 = allocNonSSA type(float) : float
+                    ra_-0 = allocNonSSA type(float) : float
+                    expo-0 = allocNonSSA type(float) : float
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_green-1 = extractVE props, const(int, 0) : float
+                    _LD_blue-1 = extractVE props, const(int, 1) : float
+                    _LD_gamma-1 = extractVE props, const(int, 2) : float
+                    _LD_offX-1 = extractVE props1, const(int, 0) : float
+                    _LD_offY-1 = extractVE props1, const(int, 1) : float
+                    interpolatedUVElem%A-0 = extractVE interpolatedUV, const(int, 0) : float
+                    _addResult%A-0 = add interpolatedUVElem%A-0, _LD_offX-1 : float
+                    interpolatedUVElem%B-0 = extractVE interpolatedUV, const(int, 1) : float
+                    _addResult%B-0 = add interpolatedUVElem%B-0, _LD_offY-1 : float
+                    _LD_coordL-1 = makeFloatVector _addResult%A-0, _addResult%B-0 : float-2
+                    interpolatedUVElem%C-0 = extractVE interpolatedUV, const(int, 0) : float
+                    interpolatedUVElem%D-0 = extractVE interpolatedUV, const(int, 1) : float
+                    _LD_coordR-1 = makeFloatVector interpolatedUVElem%C-0, interpolatedUVElem%D-0 : float-2
+                    _LD_L_col-1 = sample leftImage, _LD_coordL-1, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    _LD_R_col-1 = sample rightImage, _LD_coordR-1, const(_sample_option, nearest mipdisable clamp 2D ) : float-4
+                    _LD_L_colElem%A-0 = extractVE _LD_L_col-1, const(int, 1) : float
+                    _LD_L_colElem%B-0 = extractVE _LD_L_col-1, const(int, 0) : float
+                    _LD_L_colElem%C-0 = extractVE _LD_L_col-1, const(int, 1) : float
+                    _subResult%A-0 = sub _LD_L_colElem%B-0, _LD_L_colElem%C-0 : float
+                    _maxResult%A-0 = max const(float, 0), _subResult%A-0 : float
+                    _mulResult%A-0 = mul _LD_green-1, _maxResult%A-0 : float
+                    _LD_g1_-1 = add _LD_L_colElem%A-0, _mulResult%A-0 : float
+                    _LD_L_colElem%D-0 = extractVE _LD_L_col-1, const(int, 2) : float
+                    _LD_L_colElem%E-0 = extractVE _LD_L_col-1, const(int, 0) : float
+                    _LD_L_colElem%F-0 = extractVE _LD_L_col-1, const(int, 2) : float
+                    _subResult%B-0 = sub _LD_L_colElem%E-0, _LD_L_colElem%F-0 : float
+                    _maxResult%B-0 = max const(float, 0), _subResult%B-0 : float
+                    _mulResult%B-0 = mul _LD_blue-1, _maxResult%B-0 : float
+                    _LD_b1_-1 = add _LD_L_colElem%D-0, _mulResult%B-0 : float
+                    _LD_R_colElem%A-0 = extractVE _LD_R_col-1, const(int, 1) : float
+                    _LD_R_colElem%B-0 = extractVE _LD_R_col-1, const(int, 0) : float
+                    _LD_R_colElem%C-0 = extractVE _LD_R_col-1, const(int, 1) : float
+                    _subResult%C-0 = sub _LD_R_colElem%B-0, _LD_R_colElem%C-0 : float
+                    _maxResult%C-0 = max const(float, 0), _subResult%C-0 : float
+                    _mulResult%C-0 = mul _LD_green-1, _maxResult%C-0 : float
+                    _LD_g2_-1 = add _LD_R_colElem%A-0, _mulResult%C-0 : float
+                    _LD_R_colElem%D-0 = extractVE _LD_R_col-1, const(int, 2) : float
+                    _LD_R_colElem%E-0 = extractVE _LD_R_col-1, const(int, 0) : float
+                    _LD_R_colElem%F-0 = extractVE _LD_R_col-1, const(int, 2) : float
+                    _subResult%D-0 = sub _LD_R_colElem%E-0, _LD_R_colElem%F-0 : float
+                    _maxResult%D-0 = max const(float, 0), _subResult%D-0 : float
+                    _mulResult%D-0 = mul _LD_blue-1, _maxResult%D-0 : float
+                    _LD_b2_-1 = add _LD_R_colElem%D-0, _mulResult%D-0 : float
+                    _mulResult%E-0 = mul const(float, 178.5), _LD_g1_-1 : float
+                    _mulResult%F-0 = mul const(float, 85), _LD_b1_-1 : float
+                    _addResult%G-0 = add _mulResult%E-0, _mulResult%F-0 : float
+                    _LD_ra_-1 = div _addResult%G-0, const(float, 255) : float
+                    _LD_expo-1 = sub const(float, 1), _LD_gamma-1 : float
+                    _powResult%A-0 = pow _LD_ra_-1, _LD_expo-1 : float
+                    _LD_result-1 = makeFloatVector _powResult%A-0, _LD_g2_-1, _LD_b2_-1, const(float, 1) : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

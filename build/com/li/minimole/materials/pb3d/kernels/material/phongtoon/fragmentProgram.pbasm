@@ -1,0 +1,107 @@
+module_fragment_program PhongToonMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Phong color shading material based on vertex normals, discrete to produce toon effect.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        global parameter float-4 diffuseReflectionColor
+        global parameter float-4 extraParams
+        global parameter float-4 lightPosition
+        global parameter float-4 lightProperties
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        global parameter float-4 specularReflectionColor
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 N
+            metadata
+                id const(string, "_1_N")
+            end_metadata
+        interpolated float-4 Q
+            metadata
+                id const(string, "_0_Q")
+            end_metadata
+        output fragment float-4 result
+    end_globals
+    
+    functions
+        external_function void evaluateFragment()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    AC-0 = allocNonSSA type(float) : float
+                    DC-0 = allocNonSSA type(float) : float
+                    SC-0 = allocNonSSA type(float) : float
+                    m-0 = allocNonSSA type(float) : float
+                    LP-0 = allocNonSSA type(float-4) : float-4
+                    CP-0 = allocNonSSA type(float-4) : float-4
+                    D-0 = allocNonSSA type(float-4) : float-4
+                    S-0 = allocNonSSA type(float-4) : float-4
+                    L-0 = allocNonSSA type(float-4) : float-4
+                    V-0 = allocNonSSA type(float-4) : float-4
+                    NL-0 = allocNonSSA type(float) : float
+                    KD-0 = allocNonSSA type(float-4) : float-4
+                    H-0 = allocNonSSA type(float-4) : float-4
+                    NH-0 = allocNonSSA type(float) : float
+                    KS-0 = allocNonSSA type(float-4) : float-4
+                    KT-0 = allocNonSSA type(float-4) : float-4
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_AC-1 = extractVE lightProperties, const(int, 0) : float
+                    _LD_DC-1 = extractVE lightProperties, const(int, 1) : float
+                    _LD_SC-1 = extractVE lightProperties, const(int, 2) : float
+                    _LD_m-1 = extractVE lightProperties, const(int, 3) : float
+                    _LD_LP-1 = assign lightPosition : float-4
+                    _LD_CP-1 = assign cameraPosition : float-4
+                    _LD_D-1 = assign diffuseReflectionColor : float-4
+                    _LD_S-1 = assign specularReflectionColor : float-4
+                    _LD_L-1 = sub _LD_LP-1, Q : float-4
+                    _LD_L-2 = normalize _LD_L-1 : float-4
+                    _LD_V-1 = sub _LD_CP-1, Q : float-4
+                    _LD_V-2 = normalize _LD_V-1 : float-4
+                    _LD_NL-1 = dot N, _LD_L-2 : float
+                    _LD_NL-2 = max _LD_NL-1, const(float, 0) : float
+                    _mulResult%A-0 = mul _LD_AC-1, _LD_D-1 : float-4
+                    _mulResult%B-0 = mul _LD_DC-1, _LD_NL-2 : float
+                    _mulResult%C-0 = mul _mulResult%B-0, _LD_D-1 : float-4
+                    _LD_KD-1 = add _mulResult%A-0, _mulResult%C-0 : float-4
+                    _LD_H-1 = add _LD_L-2, _LD_V-2 : float-4
+                    _LD_H-2 = normalize _LD_H-1 : float-4
+                    _LD_NH-1 = dot N, _LD_H-2 : float
+                    _LD_NH-2 = max _LD_NH-1, const(float, 0) : float
+                    _LD_NH-3 = pow _LD_NH-2, _LD_m-1 : float
+                    _mulResult%D-0 = mul _LD_SC-1, _LD_NH-3 : float
+                    _LD_KS-1 = mul _mulResult%D-0, _LD_S-1 : float-4
+                    _LD_KT-1 = add _LD_KD-1, _LD_KS-1 : float-4
+                    extraParamsElem%A-0 = extractVE extraParams, const(int, 0) : float
+                    _LD_KT-2 = mul extraParamsElem%A-0, _LD_KT-1 : float-4
+                    _LD_KT-3 = floor _LD_KT-2 : float-4
+                    extraParamsElem%B-0 = extractVE extraParams, const(int, 0) : float
+                    _LD_result-1 = div _LD_KT-3, extraParamsElem%B-0 : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_result-1, result : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_fragment_program
+

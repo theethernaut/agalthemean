@@ -1,0 +1,61 @@
+module_material_vertex_program PhongColorMaterialKernel
+
+    metadata
+        namespace const(string, "com.li.minimole")
+        vendor const(string, "Li")
+        version const(int, 1)
+        description const(string, "Phong color shading material based on vertex normals.")
+    end_metadata
+    
+    transformations
+        SCF INTOSSA OPT(DCE* {APR DCE*}*)
+    end_transformations
+    
+    globals
+        global parameter float-4 cameraPosition
+        global parameter float-4 diffuseReflectionColor
+        global parameter float-4 lightPosition
+        global parameter float-4 lightProperties
+        global parameter float-4-4 modelReducedTransform
+        global parameter float-4-4 modelTransform
+        global parameter float-4 specularReflectionColor
+        input vertex float-4 vertexNormal
+            metadata
+                id const(string, "PB3D_NORMAL")
+            end_metadata
+        input vertex float-4 vertexPosition
+            metadata
+                id const(string, "PB3D_POSITION")
+            end_metadata
+        interpolated float-4 N
+            metadata
+                id const(string, "_1_N")
+            end_metadata
+        interpolated float-4 Q
+            metadata
+                id const(string, "_0_Q")
+            end_metadata
+    end_globals
+    
+    functions
+        external_function void evaluateVertex()
+            body
+                basic_block entry%A !! outlets(basic%A)
+                    jump block(basic%A) : void
+                end_basic_block
+                basic_block basic%A !! inlets(entry%A) outlets(exit%A)
+                    _LD_Q-1 = mul vertexPosition, modelTransform : float-4
+                    _LD_N-1 = mul vertexNormal, modelReducedTransform : float-4
+                    jump block(exit%A) : void
+                end_basic_block
+                basic_block exit%A !! inlets(basic%A)
+                    moveToNonSSA _LD_Q-1, Q : void
+                    moveToNonSSA _LD_N-1, N : void
+                    ret : void
+                end_basic_block
+            end_body
+        end_external_function
+    end_functions
+    
+end_module_material_vertex_program
+

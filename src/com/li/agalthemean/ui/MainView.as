@@ -23,8 +23,10 @@ package com.li.agalthemean.ui
 	import org.aswing.UIManager;
 	import org.aswing.geom.IntDimension;
 	import org.aswing.paling.PalingLAF;
+import org.robotlegs.base.MediatorMap;
+import org.robotlegs.core.IMediatorMap;
 
-	public class MainView extends JPanel
+public class MainView extends JPanel
 	{
 		public var shadersView:ShadersView;
 		public var renderView:RenderView;
@@ -75,7 +77,7 @@ package com.li.agalthemean.ui
 			setTimeout( function():void {
 				leftPanel.setDividerLocation( stage.stageHeight - 100, true );
 				logView.visible = true;
-			}, 50); // TODO: left panel's divider position doesn't seem to be updated otherwise
+			}, 1000); // TODO: left panel's divider position doesn't seem to be updated otherwise
 
 			// right
 			var rightPanel:JTabbedPane = new JTabbedPane();
