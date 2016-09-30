@@ -1,1 +1,6 @@
-An experimental real time AGAL editor based on Minimole. Experimental as in not intended to be a consumer product, but rather a tool for myself for experimenting and learning AGAL.
+[UPDATE 2016]
+This project was an experiment from 2011 and has since been dead, but it is a useful utility. The commit a7b0662cd0958f7eedf0b76c47319398585bb316 revives it
+by hardcoding the dependencies that were used at the moment, hence making this work 'out of the box'. The old flex SDK 4 needs to be used
+for compilation however.
+
+An experimental real time AGAL editor based on Minimole. Experimental as in not intended to be a finished product, but rather a tool for myself for experimenting and learning AGAL.
