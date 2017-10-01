@@ -1,7 +1,12 @@
 [UPDATE 2016]
-This project was an experiment from 2011 and has since been dead, but it is a useful utility. The commit a7b0662cd0958f7eedf0b76c47319398585bb316 revives it
-by hardcoding the dependencies that were used at the moment, hence making this work 'out of the box'. The old flex SDK 4 needs to be used
-for compilation however.
-Notice that you can also just use the build html to avoid compiling.
+This project was an experiment from 2011 and has since been dead, but it is a useful utility.
 
 An experimental real time AGAL editor based on Minimole. Experimental as in not intended to be a finished product, but rather a tool for myself for experimenting and learning AGAL.
+
+Project can be ran:
+- with a browser with a flash plugin, open build/AGALTheMean.html
+- with air sdk, run following following command line ``adl -screensize 1080x1920:1080x1920 app.xml``
+
+Project was done in flex SDK4 and is compatible with AS3.
+To compile refer to the Makefile.
+
