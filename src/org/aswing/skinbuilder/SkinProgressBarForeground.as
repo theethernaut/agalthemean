@@ -74,7 +74,7 @@ public class SkinProgressBarForeground extends DefaultsDecoratorBase implements 
 		}else{
 			percent = bar.getPercentComplete();
 		}
-		var bounds:IntRectangle = bounds.clone();
+		bounds = bounds.clone();
 		if(fgMargin != null){
 			if(bar.getOrientation() == AsWingConstants.HORIZONTAL){
 				bounds = fgMargin.getInsideBounds(bounds);

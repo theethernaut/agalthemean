@@ -3,7 +3,7 @@
 */
 
 package org.aswing.plaf.basic.icon{
-	
+
 import flash.display.DisplayObject;
 import flash.display.Shape;
 import flash.display.Sprite;
@@ -20,12 +20,12 @@ import org.aswing.plaf.basic.BasicGraphicsUtils;
 /**
  * @private
  */
-public class CheckBoxIcon implements Icon, UIResource{    
-	
+public class CheckBoxIcon implements Icon, UIResource{
+
 	protected var sprite:Sprite;
 	protected var box:Shape;
 	protected var dot:Shape;
-	
+
 	public function CheckBoxIcon(){
 		sprite = new Sprite();
 		sprite.mouseChildren = false;
@@ -35,15 +35,15 @@ public class CheckBoxIcon implements Icon, UIResource{
 		sprite.addChild(box);
 		sprite.addChild(dot);
 	}
-		
+
 	public function updateIcon(c:Component, g:Graphics2D, x:int, y:int):void{
 		var b:AbstractButton = AbstractButton(c);
 		var model:ButtonModel = b.getModel();
 		var drawDot:Boolean = model.isSelected();
-		
+
 		box.graphics.clear();
-		var g:Graphics2D = new Graphics2D(box.graphics);
-		
+		g = new Graphics2D(box.graphics);
+
 		var w:int = getIconWidth(c)-5;
 		var h:int = getIconHeight(c)-5;
 		x += 1;
@@ -51,7 +51,7 @@ public class CheckBoxIcon implements Icon, UIResource{
 		var cl:ASColor = c.getBackground();
 		var style:StyleResult;
 		var adjuster:StyleTune = c.getStyleTune();
-		
+
     	var isPressing:Boolean = model.isArmed() || model.isSelected();
 		var shadowScale:Number = 1;
 		var innerDis:Number = 2;
@@ -93,7 +93,7 @@ public class CheckBoxIcon implements Icon, UIResource{
 		r2 = Math.max(0, r2);
 		BasicGraphicsUtils.drawRoundRect(g, x+1, y+1, w-2, h-2, r2);
 		g.endFill();
-		
+
 		dot.graphics.clear();
 		if(drawDot){
 			g = new Graphics2D(dot.graphics);
@@ -108,7 +108,7 @@ public class CheckBoxIcon implements Icon, UIResource{
 	    		cl = cl.offsetHLS(0, 0.0, -0.3);
 	    		adjuster = adjuster.sharpen(0.6);
 			}else{
-				
+
 			}
 			var mcls:StyleResult = new StyleResult(cl, adjuster);
 			var matrix:Matrix = new Matrix();
@@ -119,28 +119,28 @@ public class CheckBoxIcon implements Icon, UIResource{
 			matrix.createGradientBox(w/2, h*3/4-2, Math.PI/4, x+w/2, y+2);
 			g.lineTo(x+w+2.5, y);
 			g.endDraw();
-			dot.filters = 
+			dot.filters =
 				[new DropShadowFilter(0, 45, mcls.bdark.getRGB(), mcls.shadow, 2, 2, 4, 1, false)];
 		}
 		dot.visible = drawDot;
 		box.alpha = alpha;
 		box.filters = [
-			new DropShadowFilter(innerDis, 45, 0x0, style.shadow*shadowScale, 5, 5, 1, 1, true), 
+			new DropShadowFilter(innerDis, 45, 0x0, style.shadow*shadowScale, 5, 5, 1, 1, true),
 			new BevelFilter(1, 45, 0x0, style.shadow, 0xFFFFFF, style.shadow, 3, 3, 1, 1, BitmapFilterType.FULL)
 		];
 	}
-	
+
 	public function getIconHeight(c:Component):int{
 		return 17;
 	}
-	
+
 	public function getIconWidth(c:Component):int{
 		return 17;
 	}
-	
+
 	public function getDisplay(c:Component):DisplayObject{
 		return sprite;
 	}
-	
+
 }
 }
