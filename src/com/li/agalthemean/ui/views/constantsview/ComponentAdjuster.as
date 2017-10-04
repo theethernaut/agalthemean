@@ -55,11 +55,13 @@ package com.li.agalthemean.ui.views.constantsview
 			rPanel.append( new JLabel( "max" ) );
 			rPanel.append( _maxStepper = new JStepper() );
 
-			_minStepper.setMinimum( -1000 );
-			_minStepper.setMaximum( 1000 );
+			_minStepper.setMinimum( -100000 );
+			_minStepper.setMaximum( 100000 );
+			_valueStepper.setMinimum(-10000);
 
-			_maxStepper.setMinimum( -1000 );
-			_maxStepper.setMaximum( 1000 );
+			_maxStepper.setMinimum( -100000 );
+			_maxStepper.setMaximum( 100000 );
+			_valueStepper.setMaximum(10000);
 
 			_minStepper.addEventListener( AWEvent.ACT, minStepperChangedHandler );
 			_maxStepper.addEventListener( AWEvent.ACT, maxStepperChangedHandler );
@@ -110,12 +112,11 @@ package com.li.agalthemean.ui.views.constantsview
 		}
 
 		private function timerUpdateHandler( event:Event ):void {
-			updateSliderFromConstant();
 			updateValueStepperFromConstant();
+			updateSliderFromConstant();
 		}
 
 		public function set target( constant:VectorRegisterConstant ):void {
-
 			_constant = constant;
 			_compNameLabel.setText( constant.compNames[ _targetComponentIndex ] );
 
@@ -126,8 +127,8 @@ package com.li.agalthemean.ui.views.constantsview
 			_maxStepper.setValue( range.y );
 
 			updateRangeFromPoint( range );
-			updateSliderFromConstant();
 			updateValueStepperFromConstant();
+			updateSliderFromConstant();
 		}
 
 		private function updateRangeFromPoint( value:Point ):void {
@@ -137,13 +138,15 @@ package com.li.agalthemean.ui.views.constantsview
 		}
 
 		private function updateSliderFromConstant():void {
-			var real:Number = _constant.value[ _targetComponentIndex ];
+			var real:Number = _valueStepper.getValue();
+			_constant.value[ _targetComponentIndex ] = real;
 			var percent:int = ( 100 / _range ) * ( real - _min );
 			_slider.setValue( percent );
 		}
 
 		private function updateConstantValueFromSlider():void {
 			var real:Number = ( _slider.getValue() / 100 ) * _range + _min;
+			var percent:int = ( 124, _slider.getValue(), real );
 			_constant.value[ _targetComponentIndex ] = real;
 		}
 
@@ -162,6 +165,7 @@ package com.li.agalthemean.ui.views.constantsview
 		private function minStepperChangedHandler( event:AWEvent ):void {
 			var range:Point = _constant.compRanges[ _targetComponentIndex ];
 			range.x = _minStepper.getValue();
+			_valueStepper.setMinimum(range.x);
 			updateRangeFromPoint( range );
 			updateSliderFromConstant();
 		}
@@ -169,6 +173,7 @@ package com.li.agalthemean.ui.views.constantsview
 		private function maxStepperChangedHandler( event:AWEvent ):void {
 			var range:Point = _constant.compRanges[ _targetComponentIndex ];
 			range.y = _maxStepper.getValue();
+			_valueStepper.setMaximum(range.y);
 			updateRangeFromPoint( range );
 			updateSliderFromConstant();
 		}

@@ -16,7 +16,7 @@ package com.li.minimole.materials.agal.registers.constants
 		public function VectorRegisterConstant( name:String = "", x:Number = 0, y:Number = 0, z:Number = 0, w:Number = 0, mapping:* = null ) {
 			super( name, Vector.<Number>( [ x, y, z, w ] ), mapping );
 			compNames = Vector.<String>( [ "x", "y", "z", "w" ] );
-			compRanges = Vector.<Point>( [ new Point( 0, 1 ), new Point( 0, 1 ), new Point( 0, 1 ), new Point( 0, 1 ) ] );
+			compRanges = Vector.<Point>( [ new Point( -10000, 10000 ), new Point( -10000, 10000 ), new Point( -10000, 10000 ), new Point( -10000, 10000 ) ] );
 		}
 
 		public function setComponentNames( xName:String = "x", yName:String = "y", zName:String = "z", wName:String = "w" ):void {
