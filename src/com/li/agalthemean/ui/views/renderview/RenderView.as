@@ -1,6 +1,7 @@
 package com.li.agalthemean.ui.views.renderview
 {
 
+	import com.li.minimole.camera.Camera3D;
 	import com.li.minimole.camera.controller.OrbitCameraController;
 	import com.li.minimole.core.Mesh;
 	import com.li.minimole.core.View3D;
@@ -94,24 +95,41 @@ package com.li.agalthemean.ui.views.renderview
 		}
 
 		private function enterframeHandler( evt:Event ):void {
-			cameraController.update();
-			view.scene.light.position = view.camera.position;
 			view.render();
 		}
 
 		private function viewMouseWheelHandler( evt:MouseEvent ):void {
 			cameraController.mouseWheel( evt.delta );
+			var delta:Number = 0;
+			if(cameraController.radius > 0 && evt.delta > 0) {
+				delta = -1;
+			} else if(cameraController.radius < 50 && evt.delta < 0) {
+				delta = 1;
+			}
+			if(delta != 0) {
+				cameraController.radius = Math.min(Math.max(2, Math.round(cameraController.radius + delta)), 50);
+				cameraController.update();
+			}
 		}
+
+		private var _moveEnabled:Boolean = false;
+		private var _trackLight:Boolean = true;
 
 		private function viewMouseMoveHandler( evt:MouseEvent ):void {
 			cameraController.mouseMove( mouseX, mouseY );
+			if(_moveEnabled) {
+				cameraController.update();
+				view.scene.light.position = view.camera.position;
+			}
 		}
 
 		private function viewMouseDownHandler( evt:MouseEvent ):void {
+			_moveEnabled = true;
 			cameraController.mouseDown();
 		}
 
 		private function viewMouseUpHandler( evt:Event ):void {
+			_moveEnabled = false;
 			cameraController.mouseUp();
 		}
 	}
