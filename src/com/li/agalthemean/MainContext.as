@@ -67,8 +67,8 @@ import org.robotlegs.mvcs.SignalContext;
 			mapCommands();
 
 			// init UI
-			setTimeout(function() {
-				var mainView = new MainView();
+			setTimeout(function():void {
+				var mainView:MainView = new MainView();
 				contextView.addChild( mainView );
 			}, 1000);
 		}

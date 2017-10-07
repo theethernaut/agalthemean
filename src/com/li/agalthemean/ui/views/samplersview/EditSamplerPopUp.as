@@ -11,7 +11,7 @@ package com.li.agalthemean.ui.views.samplersview
 
 	public class EditSamplerPopUp extends JRegisterPopUp
 	{
-		var mipChk:JCheckBox;
+		public var mipChk:JCheckBox;
 
 		public function EditSamplerPopUp( sampler:FragmentSampler ) {
 

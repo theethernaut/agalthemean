@@ -34,6 +34,7 @@ package com.li.agalthemean.ui.views.modelview
 		private var _scaleBtn:JButton;
 		private var _modelCombo:JComboBox;
 		private var _bothsidesChk:JCheckBox;
+		private var _transparencyChk:JCheckBox;
 
 		public function ModelView() {
 
@@ -64,6 +65,11 @@ package com.li.agalthemean.ui.views.modelview
 			_bothsidesChk.setSelected( true );
 			_bothsidesChk.addEventListener( AWEvent.ACT, bothsidesChkClicked );
 			options.append( _bothsidesChk );
+
+			_transparencyChk = new JCheckBox( "transparency" );
+			_transparencyChk.setSelected( false );
+			_transparencyChk.addEventListener( AWEvent.ACT, transparencyChkClicked );
+			options.append( _transparencyChk );
 
 			contentPanel.setLayout( new SoftBoxLayout( SoftBoxLayout.Y_AXIS ) );
 			contentPanel.append( geometry );
@@ -96,6 +102,10 @@ package com.li.agalthemean.ui.views.modelview
 
 		private function bothsidesChkClicked( event:AWEvent ):void {
 			_model.material.bothsides = _bothsidesChk.isSelected();
+		}
+
+		private function transparencyChkClicked( event:AWEvent ):void {
+			_model.material.transparent = _transparencyChk.isSelected();
 		}
 
 		private function popUpClosedHandler( event:FrameEvent ):void {
@@ -172,6 +182,7 @@ package com.li.agalthemean.ui.views.modelview
 		public function set model( model:Mesh ):void {
 			_model = model;
 			_model.material.bothsides = _bothsidesChk.isSelected();
+			_model.material.transparent = _transparencyChk.isSelected();
 		}
 	}
 }

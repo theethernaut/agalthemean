@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<application xmlns="http://ns.adobe.com/air/application/26.0">
+  <id>com.li.agalthemean</id>
+  <versionNumber>0.1</versionNumber>
+  <supportedProfiles>mobileDevice</supportedProfiles>
+  <filename>agaltheman</filename>
+  <name>agaltheman</name>
+  <initialWindow>
+    <title>agaltheman</title>
+    <content>build/AGALTheMean.swf</content>
+    <visible>true</visible>
+    <fullScreen>true</fullScreen>
+    <renderMode>direct</renderMode>
+    <depthAndStencil>true</depthAndStencil>
+    <resizable>true</resizable>
+
+    <aspectRatio>landscape</aspectRatio>
+
+    <autoOrients>false</autoOrients>
+    <systemChrome>standard</systemChrome>
+  </initialWindow>
+</application>

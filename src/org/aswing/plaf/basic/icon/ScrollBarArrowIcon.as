@@ -58,7 +58,7 @@ public class ScrollBarArrowIcon implements Icon, UIResource{
     	var h:Number = height;
     	shape.graphics.clear();
     	var bar:AbstractButton = c as AbstractButton;
-    	var g:Graphics2D = new Graphics2D(shape.graphics);
+    	g = new Graphics2D(shape.graphics);
     	var b:IntRectangle = new IntRectangle(x, y, w, h);
 		var gradientDir:Number = 0;
     	if(verticle){

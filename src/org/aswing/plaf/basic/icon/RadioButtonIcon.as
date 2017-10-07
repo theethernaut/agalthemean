@@ -32,7 +32,7 @@ public class RadioButtonIcon implements Icon, UIResource{
 		var drawDot:Boolean = model.isSelected();
 		
 		shape.graphics.clear();
-		var g:Graphics2D = new Graphics2D(shape.graphics);
+		g = new Graphics2D(shape.graphics);
 		
 		var w:int = getIconWidth(c)-2;
 		var h:int = getIconHeight(c)-4;
